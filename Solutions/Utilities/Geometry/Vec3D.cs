@@ -102,30 +102,31 @@ public readonly record struct Vec3D(int X, int Y, int Z) : ISpanParsable<Vec3D>,
     /// <summary>
     ///     Returns all points in a rectangle, or line, between <see cref="Zero" /> and this vector, exclusive.
     /// </summary>
-    public IEnumerable<Vec3D> GeneratePoints() => GeneratePoints(X, Y, Z);
+    public IEnumerable<Vec3D> GeneratePoints(int padding = 0) => GeneratePoints(X, Y, Z, padding);
 
     /// <summary>
     ///     Returns all points in a rectangle, or line, between this vector (inclusive) and <paramref name="max" />
     ///     (exclusive).
     /// </summary>
-    public IEnumerable<Vec3D> GeneratePoints(Vec3D max) => GeneratePoints(max.X, max.Y, max.Z, X, Y, Z);
+    public IEnumerable<Vec3D> GeneratePoints(Vec3D max, int padding = 0) =>
+        GeneratePoints(X, max.X, Y, max.Y, Z, max.Z, padding);
 
     /// <summary>
     ///     Returns all points in a rectangle, or line, between <see cref="Zero" /> and this vector as the max (both
     ///     inclusive).
     /// </summary>
-    public IEnumerable<Vec3D> GeneratePointsInclusive() => GeneratePointsInclusive(X, Y, Z);
+    public IEnumerable<Vec3D> GeneratePointsInclusive(int padding = 0) => GeneratePointsInclusive(X, Y, Z, padding);
 
     /// <summary>
     ///     Returns all points in a rectangle, or line, between this vector and an <paramref name="other" /> opposite
     ///     corner point, inclusive.
     /// </summary>
-    public IEnumerable<Vec3D> GeneratePointsInclusive(Vec3D other)
+    public IEnumerable<Vec3D> GeneratePointsInclusive(Vec3D other, int padding = 0)
     {
         int minX = Math.Min(X, other.X), maxX = Math.Max(X, other.X);
         int minY = Math.Min(Y, other.Y), maxY = Math.Max(Y, other.Y);
         int minZ = Math.Min(Z, other.Z), maxZ = Math.Max(Z, other.Z);
-        return GeneratePointsInclusive(maxX, maxY, maxZ, minX, minY, minZ);
+        return GeneratePointsInclusive(minX, maxX, minY, maxY, minZ, maxZ, padding);
     }
 
     /// <summary>Determines if the two vectors are right next to each other laterally.</summary>
@@ -219,22 +220,30 @@ public readonly record struct Vec3D(int X, int Y, int Z) : ISpanParsable<Vec3D>,
     public static int Dot(Vec3D a, Vec3D b) => a.X * b.X + a.Y * b.Y + a.Z * b.Z;
 
     /// <summary>Returns all points in a rectangle, or line, between the min (inclusive) and max (exclusive).</summary>
-    public static IEnumerable<Vec3D> GeneratePoints(int xMax, int yMax, int zMax, int xMin = 0, int yMin = 0,
-        int zMin = 0)
+    public static IEnumerable<Vec3D> GeneratePoints(int xMax, int yMax, int zMax, int padding = 0) =>
+        GeneratePoints(0, xMax, 0, yMax, 0, zMax, padding);
+
+    /// <summary>Returns all points in a rectangle, or line, between the min (inclusive) and max (exclusive).</summary>
+    public static IEnumerable<Vec3D> GeneratePoints(int xMin, int xMax, int yMin, int yMax, int zMin, int zMax,
+        int padding = 0)
     {
-        for (var x = xMin; x < xMax; x++)
-            for (var y = yMin; y < yMax; y++)
-                for (var z = zMin; z < zMax; z++)
+        for (var x = xMin + padding; x < xMax - padding; x++)
+            for (var y = yMin + padding; y < yMax - padding; y++)
+                for (var z = zMin + padding; z < zMax - padding; z++)
                     yield return new Vec3D(x, y, z);
     }
 
+    /// <summary>Returns all points in a rectangle, or line, between 0 and max (both inclusive).</summary>
+    public static IEnumerable<Vec3D> GeneratePointsInclusive(int xMax, int yMax, int zMax, int padding = 0) =>
+        GeneratePointsInclusive(0, xMax, 0, yMax, 0, zMax, padding);
+
     /// <summary>Returns all points in a rectangle, or line, between the min and max (both inclusive).</summary>
-    public static IEnumerable<Vec3D> GeneratePointsInclusive(int xMax, int yMax, int zMax, int xMin = 0, int yMin = 0,
-        int zMin = 0)
+    public static IEnumerable<Vec3D> GeneratePointsInclusive(int xMin, int xMax, int yMin, int yMax, int zMin, int zMax,
+        int padding = 0)
     {
-        for (var x = xMin; x <= xMax; x++)
-            for (var y = yMin; y <= yMax; y++)
-                for (var z = zMin; z <= zMax; z++)
+        for (var x = xMin + padding; x <= xMax - padding; x++)
+            for (var y = yMin + padding; y <= yMax - padding; y++)
+                for (var z = zMin + padding; z <= zMax - padding; z++)
                     yield return new Vec3D(x, y, z);
     }
 

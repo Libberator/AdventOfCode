@@ -123,6 +123,16 @@ public class Solution : ISolver
 }
 ```
 
+## Stay Up To Date
+If you want to get any updates from the template, you can do it automatically via setting up a
+[GitHub Action to Sync with Template](https://github.com/marketplace/actions/actions-template-sync) or you can do it manually with the following git commands:
+```
+git remote add template https://github.com/Libberator/AdventOfCodeTemplate.git
+git fetch template   // or `git fetch --all`
+git merge --squash template/main --allow-unrelated-histories
+git commit -m <message>   // or `git commit --amend` if one was made already from merge
+```
+
 ## Dependencies
 
 .NET 9.0 / C# 13

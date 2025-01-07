@@ -94,29 +94,30 @@ public readonly record struct Vec2DLong(long X, long Y) : ISpanParsable<Vec2DLon
     /// <summary>
     ///     Returns all points in a rectangle, or line, between <see cref="Zero" /> and this vector, exclusive.
     /// </summary>
-    public IEnumerable<Vec2DLong> GeneratePoints() => GeneratePoints(X, Y);
+    public IEnumerable<Vec2DLong> GeneratePoints(long padding = 0) => GeneratePoints(X, Y, padding);
 
     /// <summary>
     ///     Returns all points in a rectangle, or line, between this vector (inclusive) and <paramref name="max" />
     ///     (exclusive).
     /// </summary>
-    public IEnumerable<Vec2DLong> GeneratePoints(Vec2DLong max) => GeneratePoints(max.X, max.Y, X, Y);
+    public IEnumerable<Vec2DLong> GeneratePoints(Vec2DLong max, long padding = 0) =>
+        GeneratePoints(X, max.X, Y, max.Y, padding);
 
     /// <summary>
     ///     Returns all points in a rectangle, or line, between <see cref="Zero" /> and this vector as the max (both
     ///     inclusive).
     /// </summary>
-    public IEnumerable<Vec2DLong> GeneratePointsInclusive() => GeneratePointsInclusive(X, Y);
+    public IEnumerable<Vec2DLong> GeneratePointsInclusive(long padding = 0) => GeneratePointsInclusive(X, Y, padding);
 
     /// <summary>
     ///     Returns all points in a rectangle, or line, between this vector and an <paramref name="other" /> opposite
     ///     corner point, inclusive.
     /// </summary>
-    public IEnumerable<Vec2DLong> GeneratePointsInclusive(Vec2DLong other)
+    public IEnumerable<Vec2DLong> GeneratePointsInclusive(Vec2DLong other, long padding = 0)
     {
         long minX = Math.Min(X, other.X), maxX = Math.Max(X, other.X);
         long minY = Math.Min(Y, other.Y), maxY = Math.Max(Y, other.Y);
-        return GeneratePointsInclusive(maxX, maxY, minX, minY);
+        return GeneratePointsInclusive(minX, maxX, minY, maxY, padding);
     }
 
     /// <summary>
@@ -219,19 +220,28 @@ public readonly record struct Vec2DLong(long X, long Y) : ISpanParsable<Vec2DLon
     /// <summary>Returns the dot product of two vectors.</summary>
     public static long Dot(Vec2DLong a, Vec2DLong b) => a.X * b.X + a.Y * b.Y;
 
+    /// <summary>Returns all points in a rectangle, or line, between 0 (inclusive) and max (exclusive).</summary>
+    public static IEnumerable<Vec2DLong> GeneratePoints(long xMax, long yMax, long padding = 0) =>
+        GeneratePoints(0, xMax, 0, yMax, padding);
+
     /// <summary>Returns all points in a rectangle, or line, between the min (inclusive) and max (exclusive).</summary>
-    public static IEnumerable<Vec2DLong> GeneratePoints(long xMax, long yMax, long xMin = 0, long yMin = 0)
+    public static IEnumerable<Vec2DLong> GeneratePoints(long xMin, long xMax, long yMin, long yMax, long padding = 0)
     {
-        for (var x = xMin; x < xMax; x++)
-            for (var y = yMin; y < yMax; y++)
+        for (var x = xMin + padding; x < xMax - padding; x++)
+            for (var y = yMin + padding; y < yMax - padding; y++)
                 yield return new Vec2DLong(x, y);
     }
 
+    /// <summary>Returns all points in a rectangle, or line, between 0 and max (both inclusive).</summary>
+    public static IEnumerable<Vec2DLong> GeneratePointsInclusive(long xMax, long yMax, long padding = 0) =>
+        GeneratePointsInclusive(0, xMax, 0, yMax, padding);
+
     /// <summary>Returns all points in a rectangle, or line, between the min and max (both inclusive).</summary>
-    public static IEnumerable<Vec2DLong> GeneratePointsInclusive(long xMax, long yMax, long xMin = 0, long yMin = 0)
+    public static IEnumerable<Vec2DLong> GeneratePointsInclusive(long xMin, long xMax, long yMin, long yMax,
+        long padding = 0)
     {
-        for (var x = xMin; x <= xMax; x++)
-            for (var y = yMin; y <= yMax; y++)
+        for (var x = xMin + padding; x <= xMax - padding; x++)
+            for (var y = yMin + padding; y <= yMax - padding; y++)
                 yield return new Vec2DLong(x, y);
     }
 
