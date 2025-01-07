@@ -9,14 +9,14 @@ namespace AoC.Solutions;
 /// <param name="testValue">Value to be used when the test case is being run</param>
 /// <remarks>It's up to the developer to ensure the Type matches (this is not enforced). Otherwise, it will throw</remarks>
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-internal class TestValueAttribute(object testValue) : Attribute
+public class TestValueAttribute(object testValue) : Attribute
 {
     public object TestValue = testValue;
 }
 
-internal static class SolutionModifier
+public static class SolverModifier
 {
-    internal static void ApplyTestValues<T>(this T instance) where T : ISolver
+    public static void ApplyTestValues<T>(this T instance) where T : ISolver
     {
         var type = instance.GetType();
         const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic |

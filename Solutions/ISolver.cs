@@ -13,6 +13,10 @@ public interface ISolver
 
 public static class SolverFactory
 {
+    // unused, but here's how you *could* get Year and Day from a Solution
+    // public static int Year(this ISolver solver) => int.Parse(solver.GetType().Namespace![^8..^4]);
+    // public static int Day(this ISolver solver) => int.Parse(solver.GetType().Namespace![^2..]);
+
     public static bool TryCreateSolver(int year, int day, [NotNullWhen(true)] out ISolver? solver)
     {
         solver = CreateSolver(year, day);

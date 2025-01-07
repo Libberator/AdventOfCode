@@ -66,6 +66,7 @@ public static class SolutionTests
             foreach (var aoCTestCase in tests)
             {
                 if (!SolverFactory.TryCreateSolver(year, day, out var solver)) break;
+                solver.ApplyTestValues(); // overwrites fields and properties with [TestValue] value
                 yield return new TestCaseData(solver, aoCTestCase)
                     .SetCategory($"Y{year}")
                     .SetName($"Y{year}.D{day:D2}{(i > 1 ? $".{i}" : string.Empty)}");

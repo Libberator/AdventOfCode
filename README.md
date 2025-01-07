@@ -99,8 +99,8 @@ Note: The `--year`/`-y` and `--day`/`-d` options only support single values for 
 
 When you run the Test Runner, it will create test cases for you based off of your `D##TestCase.yaml` files
 
-Don't have any test files yet? It will automatically generate test case template files for you, matching which `Solution.cs`
-files you have. Or you can run the generator test manually (e.g. after you've run `init`)
+Don't have any test files yet? Run the generator (made as an Explicit Test) and it will automatically generate test case
+template files for you, matching which `Solution.cs` files you have. Recommend doing that after you've run `init`
 
 Why Yaml? It supports multi-line inputs very nicely (JSON does not), and there's very little boilerplate or distracting
 syntax (e.g. XML/HTML tags). I could've created my own format and parser, but that would needlessly add a barrier to
@@ -130,7 +130,6 @@ If you want to get any updates from the template, you can do it automatically vi
 git remote add template https://github.com/Libberator/AdventOfCodeTemplate.git
 git fetch template   // or `git fetch --all`
 git merge --squash template/main --allow-unrelated-histories
-git commit -m <message>   // or `git commit --amend` if one was made already from merge
 ```
 
 ## Dependencies
