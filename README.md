@@ -106,6 +106,23 @@ Why Yaml? It supports multi-line inputs very nicely (JSON does not), and there's
 syntax (e.g. XML/HTML tags). I could've created my own format and parser, but that would needlessly add a barrier to
 entry for other people to use this project
 
+### :exclamation: **NEW FEATURE** :exclamation:
+Some puzzles have test cases that require a different parameter for your solver to use (e.g. specific grid size or number
+of iterations), and it can't always be inferred from the Input data. I've included a special Attribute that will override
+any value for a field or property only when the Test Runner is running. It's called `[TestValue]`. Here's how to use it:
+```csharp
+public class Solution : ISolver
+{
+    [TestValue(new Vec2D(11, 13)]  // will use the smaller grid size when Tests are running
+    Vec2D gridSize = new Vec2D(101, 103);
+
+    [TestValue(12)]  // will use 12 when the Tests are running
+    int Iterations { get; set; } = 125; // will use 125 by default otherwise
+
+    // ... rest of solution ...
+}
+```
+
 ## Dependencies
 
 .NET 9.0 / C# 13

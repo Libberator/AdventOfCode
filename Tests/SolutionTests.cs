@@ -17,7 +17,7 @@ namespace Aoc.Tests;
 public static class SolutionTests
 {
     /* Adjust year(s) here. This is only used if the [TestCaseSource] is using (GenerateTestsForYears) */
-    private const int StartYear = 2024;
+    private const int StartYear = 2015;
 
     private const int StopYear = 2024;
 
@@ -25,8 +25,8 @@ public static class SolutionTests
     private static readonly IEnumerable<int> Years = Enumerable.Range(StartYear, StopYear - StartYear + 1);
 
     [Test]
-    [TestCaseSource(nameof(GenerateTestsForYears))] // Use this if you only want certain Years tested
-    //[TestCaseSource(nameof(GenerateAllTests))] // Use this if you prefer all the tests to be created
+    //[TestCaseSource(nameof(GenerateTestsForYears))] // Use this if you only want certain Years tested
+    [TestCaseSource(nameof(GenerateAllTests))] // Use this if you prefer all the tests to be created
     public static void TestSolution(ISolver solver, AoCTestCase testCase)
     {
         if (testCase is { Part1Expected: null, Part2Expected: null })
@@ -44,14 +44,14 @@ public static class SolutionTests
         {
             var part1Result = solver.SolvePart1()?.ToString();
             assertions.Add(() =>
-                Assert.That(expected1, Is.EqualTo(part1Result), "Part 1 does not match expected results."));
+                Assert.That(part1Result, Is.EqualTo(expected1), "Part 1 does not match expected results."));
         }
 
         if (!string.IsNullOrEmpty(expected2))
         {
             var part2Result = solver.SolvePart2()?.ToString();
             assertions.Add(() =>
-                Assert.That(expected2, Is.EqualTo(part2Result), "Part 2 does not match expected results."));
+                Assert.That(part2Result, Is.EqualTo(expected2), "Part 2 does not match expected results."));
         }
 
         // Assert
@@ -59,10 +59,10 @@ public static class SolutionTests
     }
 
     private static IEnumerable<TestCaseData> GenerateAllTests() =>
-        SolverFactory.CreateAllSolvers().SelectMany(CreateTestCaseData);
+        SolverFactory.CreateAllSolvers(useTestValues: true).SelectMany(CreateTestCaseData);
 
     private static IEnumerable<TestCaseData> GenerateTestsForYears() =>
-        Years.SelectMany(year => SolverFactory.CreateSolvers(year).SelectMany(CreateTestCaseData));
+        Years.SelectMany(year => SolverFactory.CreateSolvers(year, useTestValues: true).SelectMany(CreateTestCaseData));
 
     private static IEnumerable<TestCaseData> CreateTestCaseData(ISolver solver)
     {
