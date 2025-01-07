@@ -83,12 +83,6 @@ public static partial class Utils
     public static T[] GetColumnData<T>(this T[][] values, int column) => values.Select(x => x[column]).ToArray();
 
     /// <summary>
-    ///     Tries to grab a value from a dictionary if it exists, otherwise returns the provided default value.
-    /// </summary>
-    public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key,
-        TValue defVal) => dict.TryGetValue(key, out var value) ? value : defVal;
-
-    /// <summary>
     ///     Adds a key/value pair to the <see cref="IDictionary{TKey,TValue}" /> if the key does not already exist.
     ///     Return the pre-existing or newly generated value for the key.
     /// </summary>

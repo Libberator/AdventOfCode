@@ -17,7 +17,7 @@ namespace Aoc.Tests;
 public static class SolutionTests
 {
     /* Adjust year(s) here. This is only used if the [TestCaseSource] is using (GenerateTestsForYears) */
-    private const int StartYear = 2015;
+    private const int StartYear = 2024;
 
     private const int StopYear = 2024;
 
@@ -25,8 +25,8 @@ public static class SolutionTests
     private static readonly IEnumerable<int> Years = Enumerable.Range(StartYear, StopYear - StartYear + 1);
 
     [Test]
-    //[TestCaseSource(nameof(GenerateTestsForYears))] // Use this if you only want certain Years tested
-    [TestCaseSource(nameof(GenerateAllTests))] // Use this if you prefer all the tests to be created
+    [TestCaseSource(nameof(GenerateTestsForYears))] // Use this if you only want certain Years tested
+    //[TestCaseSource(nameof(GenerateAllTests))] // Use this if you prefer all the tests to be created
     public static void TestSolution(ISolver solver, AoCTestCase testCase)
     {
         if (testCase is { Part1Expected: null, Part2Expected: null })
