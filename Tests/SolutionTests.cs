@@ -13,10 +13,9 @@ namespace Aoc.Tests;
 ///     Automates tests to match what solutions are available. To generate test files, run the standard tests
 ///     (it will call the generator if it's missing test files) or run the Generator method manually.
 /// </summary>
-/// <remarks>You can customize whether to run all the tests or only for certain years. See comments.</remarks>
 public static class SolutionTests
 {
-    /* Adjust year(s) here. This is only used if the [TestCaseSource] is using (GenerateTestsForYears) */
+    /* Adjust year(s) here */
     private const int StartYear = 2024;
 
     private const int StopYear = 2024;
@@ -25,8 +24,7 @@ public static class SolutionTests
     private static readonly IEnumerable<int> Years = Enumerable.Range(StartYear, StopYear - StartYear + 1);
 
     [Test]
-    [TestCaseSource(nameof(GenerateTestsForYears))] // Use this if you only want certain Years tested
-    //[TestCaseSource(nameof(GenerateAllTests))] // Use this if you prefer all the tests to be created
+    [TestCaseSource(nameof(GenerateTestsForYears))]
     public static void TestSolution(ISolver solver, AoCTestCase testCase)
     {
         if (testCase is { Part1Expected: null, Part2Expected: null })
@@ -58,22 +56,22 @@ public static class SolutionTests
         Assert.Multiple(() => assertions.ForEach(assertion => assertion()));
     }
 
-    private static IEnumerable<TestCaseData> GenerateAllTests() =>
-        SolverFactory.CreateAllSolvers(useTestValues: true).SelectMany(CreateTestCaseData);
+    private static IEnumerable<TestCaseData> GenerateTestsForYears() => Years.SelectMany(GenerateTestsForYear);
 
-    private static IEnumerable<TestCaseData> GenerateTestsForYears() =>
-        Years.SelectMany(year => SolverFactory.CreateSolvers(year, useTestValues: true).SelectMany(CreateTestCaseData));
-
-    private static IEnumerable<TestCaseData> CreateTestCaseData(ISolver solver)
+    private static IEnumerable<TestCaseData> GenerateTestsForYear(int year)
     {
-        var year = solver.Year();
-        var day = solver.Day();
-        TestCaseFileManager.EnsureTestCasesExist(year, day);
-        var testCases = TestCaseFileManager.GetTestCaseData(year, day);
-
-        return testCases.Select((testCase, i) => new TestCaseData(solver, testCase)
-            .SetCategory($"Y{year}")
-            .SetName($"Y{year}.D{day:D2}{(testCases.Count > 1 ? $".{i}" : "")}"));
+        foreach (var (day, tests) in TestCaseFileManager.GetTestCasesYear(year))
+        {
+            var i = 1;
+            foreach (var aoCTestCase in tests)
+            {
+                if (!SolverFactory.TryCreateSolver(year, day, out var solver)) break;
+                yield return new TestCaseData(solver, aoCTestCase)
+                    .SetCategory($"Y{year}")
+                    .SetName($"Y{year}.D{day:D2}{(i > 1 ? $".{i}" : string.Empty)}");
+                i++;
+            }
+        }
     }
 
     [Test]

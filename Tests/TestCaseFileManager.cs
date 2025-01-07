@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using NUnit.Framework;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
@@ -22,12 +23,14 @@ public static class TestCaseFileManager
     private static string GetTestCasesPath(int year, int day) =>
         Path.Combine(TestsDirectory, $"Y{year}", $"D{day:D2}TestCases.yaml");
 
-    public static List<AoCTestCase> GetTestCaseData(int year, int day)
+    public static IEnumerable<(int Day, List<AoCTestCase> Tests)> GetTestCasesYear(int year)
     {
-        var yamlPath = GetTestCasesPath(year, day);
-        var yamlText = File.ReadAllText(yamlPath);
-        var aocTestCases = Deserializer.Deserialize<AoCTestCases>(yamlText);
-        return aocTestCases.TestCases;
+        for (var day = 1; day <= 25; day++)
+        {
+            var testCases = GetTestCaseData(year, day);
+            if (testCases == null) continue;
+            yield return (day, testCases);
+        }
     }
 
     public static void EnsureTestCasesExist(int year, int day)
@@ -50,6 +53,21 @@ public static class TestCaseFileManager
         var yamlTemplate = Serializer.Serialize(new AoCTestCases());
         File.WriteAllText(yamlPath, yamlTemplate);
         Console.WriteLine($"Created File '{yamlPath}'");
+    }
+
+    private static List<AoCTestCase>? GetTestCaseData(int year, int day)
+    {
+        try
+        {
+            var yamlPath = GetTestCasesPath(year, day);
+            var yamlText = File.ReadAllText(yamlPath);
+            var aocTestCases = Deserializer.Deserialize<AoCTestCases>(yamlText);
+            return aocTestCases.TestCases;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 }
 
