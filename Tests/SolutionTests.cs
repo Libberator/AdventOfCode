@@ -16,7 +16,7 @@ namespace Aoc.Tests;
 public static class SolutionTests
 {
     /* Adjust year(s) here */
-    private const int StartYear = 2015;
+    private const int StartYear = 2024;
 
     private const int StopYear = 2024;
 

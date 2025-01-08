@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using AoC.Utilities.Collections;
 using AoC.Utilities.Extensions;
 using AoC.Utilities.Geometry;
@@ -20,7 +19,7 @@ public class Solution : ISolver
 
     public object SolvePart1() => FindPath([.._bytes[.._qty]]);
 
-    public object SolvePart2() => _bytes[Enumerable.Range(0, _bytes.Count - 1) .First(PathBlocked)];
+    public object SolvePart2() => _bytes[0.BinarySearch(_bytes.Count - 1, PathBlocked)];
 
     private bool PathBlocked(int i) => FindPath([.._bytes[..(i + 1)]], true) < 0;
 
