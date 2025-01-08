@@ -129,6 +129,30 @@ public static partial class Utils
         return currentCoefficient;
     }
 
+    /// <summary>
+    ///     Get the next (higher) power of 10. Similar to `10 * Math.Pow(10, Math.Floor(Math.Log10(number))` but more
+    ///     efficient.
+    /// </summary>
+    /// <example>
+    ///     Useful for number concatenation. Instead of using strings to do "123" + "45", it would be
+    ///     <code>123 * 45.NextPowerOfTen() + 45  // 12,345</code>
+    /// </example>
+    /// <returns>[1-9] -> 10. [10-99] -> 100. [100-999] -> 1000. etc.</returns>
+    public static T NextPowerOf10<T>(this T value) where T : INumber<T>
+    {
+        if (T.IsNegative(value))
+            throw new ArgumentException($"Argument must be a positive integer. Value given: {value}", nameof(value));
+        var ten = (T.One + T.One + T.One) * (T.One + T.One + T.One) + T.One;
+        var power = ten;
+        while (value >= ten)
+        {
+            value /= ten;
+            power *= ten;
+        }
+
+        return power;
+    }
+
     /// <summary>Similar to Sum(), except each element in the <paramref name="source" /> is multiplied by each other.</summary>
     public static T Product<T>(this IEnumerable<T> source) where T : INumber<T> =>
         source.Aggregate(T.MultiplicativeIdentity, (current, value) => current * value);
