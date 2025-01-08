@@ -108,8 +108,8 @@ entry for other people to use this project
 
 ### Custom Test Values
 Some puzzles have test cases that require a different parameter for your solver to use (e.g. specific grid size or number
-of iterations), and it can't always be inferred from the Input data. I've included a special Attribute that will override
-any value when the Test Runner is running. It's called `[TestValue]`. Here's how to use it:
+of iterations), and it can't always be inferred from the input data. I've included a special Attribute that will override
+any value when the Test Runner is running. It's called `TestValueAttribute` and here's how to use it:
 ```csharp
 public class Solution : ISolver
 {
@@ -117,15 +117,15 @@ public class Solution : ISolver
     public Vec2D GridSize { get; set; } = new Vec2D(101, 103);
 
     [TestValue(12)]  // will use 12 when the tests are running
-    private int _iterations = 125; // will use 125 by default otherwise
+    private readonly int _iterations = 125; // will use 125 by default otherwise
 
     // ... rest of solution ...
 }
 ```
-Note: You can use this Attribute on a field or property, can be instanced or static, and any visibility (public, private,
-etc.). But it's your responsibility to ensure:
-- The field/property is **not readonly** (i.e. it has a setter)
-- You use the Attribute's constructor and don't leave it blank (i.e. a standalone `[TestValue]` is not allowed)
+Some restrictions on using this attribute:
+- A field with this Attribute cannot be `const`, nor `static readonly`. It can be `static`, it can be `readonly`, but not both
+- An auto-property with this Attribute must have a `set;`, otherwise it can't be overwritten
+- You must put something in the Attribute's constructor (i.e. a standalone `[TestValue]` is not allowed)
 
 ## Stay Up To Date
 If you want to get any updates from the template, you can do it automatically via setting up a

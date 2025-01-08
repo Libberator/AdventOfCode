@@ -4,10 +4,10 @@ using System.Reflection;
 namespace AoC.Solutions;
 
 /// <summary>
-///     Apply to a field or property a value that should replace the current value when the Test Cases are running. The
-///     field or property cannot be const or readonly! Static and private are allowed, but must be able to have a setter.
+///     Apply to a field or property a value that should replace the current value when the Test Cases are running. A
+///     field with this Attribute cannot be const nor static readonly and an auto-property must have a setter.
 /// </summary>
-/// <param name="args">Arguments to match the Type of the field/property or to be used in that Type's constructor</param>
+/// <param name="args">Arguments to match the Type of the field/property or to be used in a constructor for that Type</param>
 /// <remarks>
 ///     It's up to the developer to ensure the Attribute's constructor is used and the arguments match the Type of the
 ///     field/property if primitive or can be used in a constructor for one if not primitive. This is not enforced and
