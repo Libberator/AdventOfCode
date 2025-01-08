@@ -16,9 +16,9 @@ namespace Aoc.Tests;
 public static class SolutionTests
 {
     /* Adjust year(s) here */
-    private const int StartYear = 2024;
+    private const int StartYear = 2023;
 
-    private const int StopYear = 2024;
+    private const int StopYear = 2023;
 
     /* Can also create array manually if you want to test a sparse selection: Years = [2021, 2023, 2024]; */
     private static readonly IEnumerable<int> Years = Enumerable.Range(StartYear, StopYear - StartYear + 1);
