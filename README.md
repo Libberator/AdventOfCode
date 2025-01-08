@@ -106,22 +106,26 @@ Why Yaml? It supports multi-line inputs very nicely (JSON does not), and there's
 syntax (e.g. XML/HTML tags). I could've created my own format and parser, but that would needlessly add a barrier to
 entry for other people to use this project
 
-### :exclamation: **NEW FEATURE** :exclamation:
+### Custom Test Values
 Some puzzles have test cases that require a different parameter for your solver to use (e.g. specific grid size or number
 of iterations), and it can't always be inferred from the Input data. I've included a special Attribute that will override
-any value for a field or property only when the Test Runner is running. It's called `[TestValue]`. Here's how to use it:
+any value when the Test Runner is running. It's called `[TestValue]`. Here's how to use it:
 ```csharp
 public class Solution : ISolver
 {
-    [TestValue(new Vec2D(11, 13)]  // will use the smaller grid size when Tests are running
-    Vec2D gridSize = new Vec2D(101, 103);
+    [TestValue(11, 13)]  // will create a Vec2D from args and use the smaller grid size when testing
+    public Vec2D GridSize { get; set; } = new Vec2D(101, 103);
 
-    [TestValue(12)]  // will use 12 when the Tests are running
-    int Iterations { get; set; } = 125; // will use 125 by default otherwise
+    [TestValue(12)]  // will use 12 when the tests are running
+    private int _iterations = 125; // will use 125 by default otherwise
 
     // ... rest of solution ...
 }
 ```
+Note: You can use this Attribute on a field or property, can be instanced or static, and any visibility (public, private,
+etc.). But it's your responsibility to ensure:
+- The field/property is **not readonly** (i.e. it has a setter)
+- You use the Attribute's constructor and don't leave it blank (i.e. a standalone `[TestValue]` is not allowed)
 
 ## Stay Up To Date
 If you want to get any updates from the template, you can do it automatically via setting up a

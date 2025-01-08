@@ -40,6 +40,22 @@ public static partial class Utils
     }
 
     /// <summary>
+    ///     Searches between two values, inclusive, and returns first value which passes the condition. Throws if none found.
+    /// </summary>
+    public static int BinarySearch(this int min, int max, Predicate<int> check)
+    {
+        var index = max - (max - min) / 2;
+        while (min + 1 < max)
+        {
+            if (check(index)) max = index;
+            else min = index;
+            index = max - (max - min) / 2;
+        }
+
+        return check(min) ? min : check(max) ? max : throw new Exception("Not found");
+    }
+
+    /// <summary>
     ///     Chunk the source based on a <paramref name="takePredicate" /> and an optional <paramref name="skipPredicate" />.
     /// </summary>
     public static IList<T[]> ChunkBy<T>(this IEnumerable<T> source, Predicate<T> takePredicate,
