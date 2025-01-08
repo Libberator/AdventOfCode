@@ -17,7 +17,7 @@ public class Solution : ISolver
 
     public object SolvePart1() => string.Join(',', RunProgram(_instructions, _registerA));
 
-    public object SolvePart2() => ReverseSearch(_instructions).First();
+    public object SolvePart2() => ReverseSearch(_instructions).FirstOrDefault();
 
     private static List<long> RunProgram(long[] instructions, long regA, long regB = 0, long regC = 0)
     {
