@@ -1,9 +1,7 @@
 //#define PRINT_TREE
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AoC.Utilities.Extensions;
 using AoC.Utilities.Geometry;
 
@@ -11,13 +9,10 @@ namespace AoC.Solutions.Y2024.D14;
 
 public class Solution : ISolver
 {
-    // ReSharper disable FieldCanBeMadeReadOnly.Local
-    // ReSharper disable ConvertToConstant.Local
     private const int Seconds = 100;
-    [TestValue(11)] private static int _width = 101;
-    [TestValue(7)] private static int _height = 103;
-
+    [TestValue(7)] private readonly int _height = 103;
     private readonly List<Pose2D> _robots = [];
+    [TestValue(11)] private readonly int _width = 101;
 
     public void Setup(string[] input)
     {
@@ -50,13 +45,11 @@ public class Solution : ISolver
         var y = Enumerable.Range(0, _height).MinBy(i => _robots.Select(r => GetPosAtTime(r, i).Y).Variance());
         var seconds = (_width.ModInverse(_height) * (y - x)).Mod(_height) * _width + x;
 
-#if PRINT_TREE
         PrintState(seconds);
-#endif
         return seconds;
     }
 
-    private static Vec2D GetPosAtTime(Pose2D pose, int seconds)
+    private Vec2D GetPosAtTime(Pose2D pose, int seconds)
     {
         var (x, y) = pose.Step(seconds).Pos;
         x = x.Mod(_width);
@@ -67,8 +60,9 @@ public class Solution : ISolver
     // ReSharper disable once UnusedMember.Local
     private void PrintState(int seconds)
     {
+#if PRINT_TREE
         var positions = new HashSet<Vec2D>(_robots.Select(r => GetPosAtTime(r, seconds)));
-        var sb = new StringBuilder();
+        var sb = new System.Text.StringBuilder();
 
         for (var y = 0; y < _height; y++)
         {
@@ -77,6 +71,7 @@ public class Solution : ISolver
             sb.AppendLine();
         }
 
-        Console.WriteLine(sb.ToString());
+        System.Console.WriteLine(sb.ToString());
+#endif
     }
 }

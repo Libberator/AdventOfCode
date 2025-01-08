@@ -8,12 +8,10 @@ namespace AoC.Solutions.Y2024.D18;
 
 public class Solution : ISolver
 {
-    // ReSharper disable FieldCanBeMadeReadOnly.Local
-    // ReSharper disable ConvertToConstant.Local
     private readonly List<Vec2D> _bytes = [];
+    [TestValue(6, 6)] private readonly Vec2D _end = new(70, 70);
+    [TestValue(12)] private readonly int _qty = 1024;
     private readonly Vec2D _start = Vec2D.Zero;
-    [TestValue(6, 6)] private Vec2D _end = new(70, 70);
-    [TestValue(12)] private int _qty = 1024;
 
     public void Setup(string[] input) => _bytes.AddRange(input.ParseVec2Ds());
 

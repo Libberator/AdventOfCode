@@ -7,11 +7,8 @@ namespace AoC.Solutions.Y2024.D20;
 
 public class Solution : ISolver
 {
+    [TestValue(50)] private readonly int _minTimeSaved = 100;
     private readonly Dictionary<Vec2D, int> _path = [];
-
-    // ReSharper disable once FieldCanBeMadeReadOnly.Local
-    // ReSharper disable once ConvertToConstant.Local
-    [TestValue(50)] private int _minTimeSaved = 100;
 
     public void Setup(string[] input)
     {
