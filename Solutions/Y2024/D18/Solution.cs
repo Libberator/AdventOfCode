@@ -17,7 +17,7 @@ public class Solution : ISolver
 
     public object SolvePart1() => FindPath([.._bytes[.._qty]]);
 
-    public object SolvePart2() => _bytes[0.BinarySearch(_bytes.Count - 1, PathBlocked)];
+    public object SolvePart2() => _bytes[Utils.BinarySearch(0, _bytes.Count - 1, PathBlocked)];
 
     private bool PathBlocked(int i) => FindPath([.._bytes[..(i + 1)]], true) < 0;
 

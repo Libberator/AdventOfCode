@@ -34,25 +34,26 @@ public static partial class Utils
             i = max - (max - min) / 2;
         }
 
-        return predicate(list[min]) ? min
-            : predicate(list[max]) ? max
-            : -1;
+        return predicate(list[min]) ? min : predicate(list[max]) ? max : -1;
     }
 
     /// <summary>
-    ///     Searches between two values, inclusive, and returns first value which passes the condition. Throws if none found.
+    ///     Searches between two values, inclusive, according to a condition.
     /// </summary>
-    public static int BinarySearch(this int min, int max, Predicate<int> check)
+    /// <returns>The first value that passes the condition. Otherwise, it returns -1</returns>
+    public static T BinarySearch<T>(T min, T max, Predicate<T> check) where T : INumber<T>
     {
-        var index = max - (max - min) / 2;
-        while (min + 1 < max)
+        var two = T.One + T.One;
+        
+        var index = max - (max - min) / two;
+        while (min + T.One < max)
         {
             if (check(index)) max = index;
             else min = index;
-            index = max - (max - min) / 2;
+            index = max - (max - min) / two;
         }
 
-        return check(min) ? min : check(max) ? max : throw new Exception("Not found");
+        return check(min) ? min : check(max) ? max : -T.One;
     }
 
     /// <summary>
