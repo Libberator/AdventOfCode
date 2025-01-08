@@ -379,7 +379,7 @@ public readonly record struct Vec2D(int X, int Y) : ISpanParsable<Vec2D>, ISpanF
 
     /// <summary>Returns true if <paramref name="value" /> is between min and max (inclusive).</summary>
     public static bool WithinBoundsInclusive(Vec2D value, Vec2D min, Vec2D max) =>
-        WithinBoundsInclusive(value, max.X, max.Y, min.X, min.X);
+        WithinBoundsInclusive(value, min.X, max.X, min.Y, max.Y);
 
     /// <summary>Returns true if <paramref name="value" /> between 0 and max (inclusive).</summary>
     public static bool WithinBoundsInclusive(Vec2D value, int maxX, int maxY) =>

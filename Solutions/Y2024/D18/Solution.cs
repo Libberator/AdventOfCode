@@ -1,19 +1,54 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using AoC.Utilities.Collections;
+using AoC.Utilities.Extensions;
+using AoC.Utilities.Geometry;
+
 namespace AoC.Solutions.Y2024.D18;
 
 public class Solution : ISolver
 {
-    public void Setup(string[] input)
+    // ReSharper disable FieldCanBeMadeReadOnly.Local
+    // ReSharper disable ConvertToConstant.Local
+    private readonly List<Vec2D> _bytes = [];
+    private readonly Vec2D _start = Vec2D.Zero;
+    [TestValue(6, 6)] private Vec2D _end = new(70, 70);
+    [TestValue(12)] private int _qty = 1024;
+
+    public void Setup(string[] input) => _bytes.AddRange(input.ParseVec2Ds());
+
+    public object SolvePart1() => FindPath([.._bytes[.._qty]]);
+
+    public object SolvePart2() => _bytes[Enumerable.Range(0, _bytes.Count - 1) .First(PathBlocked)];
+
+    private bool PathBlocked(int i) => FindPath([.._bytes[..(i + 1)]], true) < 0;
+
+    private int FindPath(HashSet<Vec2D> bytes, bool depthFirst = false)
     {
-        // process input
+        Deque<Node> deque = new([new Node(_start, 0)]);
+        HashSet<Vec2D> visited = [];
+
+        Func<Node> getNextNode = depthFirst ? deque.RemoveFromBack : deque.RemoveFromFront; // DFS vs BFS
+
+        while (deque.Count > 0)
+        {
+            var node = getNextNode();
+            if (!visited.Add(node.Pos)) continue;
+
+            if (node.Pos == _end) return node.Steps;
+
+            foreach (var dir in Vec2D.CardinalDirs)
+            {
+                var next = node.Pos + dir;
+                if (!next.IsWithinBoundsInclusive(_end) || visited.Contains(next) || bytes.Contains(next))
+                    continue;
+                deque.AddToBack(new Node(next, node.Steps + 1));
+            }
+        }
+
+        return -1;
     }
 
-    public object SolvePart1()
-    {
-        return "Part 1";
-    }
-
-    public object SolvePart2()
-    {
-        return "Part 2";
-    }
+    private readonly record struct Node(Vec2D Pos, int Steps);
 }
