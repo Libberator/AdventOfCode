@@ -17,7 +17,6 @@ public static class SolutionTests
 {
     /* Adjust year(s) here */
     private const int StartYear = 2023;
-
     private const int StopYear = 2023;
 
     /* Can also create array manually if you want to test a sparse selection: Years = [2021, 2023, 2024]; */
@@ -38,18 +37,22 @@ public static class SolutionTests
 
         // Act
         solver.Setup(input);
-        var part1Result = solver.SolvePart1()?.ToString();
-        var part2Result = solver.SolvePart2()?.ToString();
 
-        // Assert
         if (!string.IsNullOrEmpty(expected1))
+        {
+            var part1Result = solver.SolvePart1()?.ToString();
             assertions.Add(() =>
                 Assert.That(part1Result, Is.EqualTo(expected1), "Part 1 does not match expected results."));
+        }
 
         if (!string.IsNullOrEmpty(expected2))
+        {
+            var part2Result = solver.SolvePart2()?.ToString();
             assertions.Add(() =>
                 Assert.That(part2Result, Is.EqualTo(expected2), "Part 2 does not match expected results."));
+        }
 
+        // Assert
         Assert.Multiple(() => assertions.ForEach(assertion => assertion.Invoke()));
     }
 

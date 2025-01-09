@@ -222,6 +222,8 @@ public static class Program
                 $" Did you add it to your .csproj and <CopyToOutputDirectory>?\n{e.Message}", ConsoleColor.DarkRed);
             return;
         }
+#else
+        defaultArgs = "--help";
 #endif
         if (string.IsNullOrEmpty(defaultArgs)) return; // prevent endless recursion
         await root.InvokeAsync(defaultArgs);

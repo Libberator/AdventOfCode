@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using AoC.Utilities.Extensions;
 
@@ -27,7 +26,7 @@ public class Solution : ISolver
 
     private static long WaysToWin(int time, long distance)
     {
-        var result = Utils.BinarySearch(1L, time / 2, i => i * (time - i) > distance);
-        return result >= 0 ? time - 2 * result + 1 : 0;
+        var firstWin = Utils.BinarySearch(1L, time / 2, i => i * (time - i) > distance);
+        return firstWin >= 0 ? time - 2 * firstWin + 1 : 0;
     }
 }

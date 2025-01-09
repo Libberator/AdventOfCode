@@ -44,7 +44,6 @@ public static partial class Utils
     public static T BinarySearch<T>(T min, T max, Predicate<T> check) where T : INumber<T>
     {
         var two = T.One + T.One;
-        
         var index = max - (max - min) / two;
         while (min + T.One < max)
         {
@@ -63,24 +62,27 @@ public static partial class Utils
         Predicate<T>? skipPredicate = null)
     {
         var chunks = new List<T[]>();
-        var enumerable = source as IList<T> ?? source.ToArray();
+        var array = source as T[] ?? source.ToArray();
         skipPredicate ??= el => !takePredicate(el);
-
-        for (var i = 0; i < enumerable.Count;)
+        
+        var takeIndex = 0;
+        for (var i = 0; i < array.Length; i++)
         {
-            var chunk = enumerable
-                .Skip(i)
-                .TakeWhile(takePredicate.Invoke)
-                .ToArray();
+            if (takePredicate(array[i])) continue;
+            if (i - takeIndex > 0)
+                chunks.Add(array[takeIndex..i]);
 
-            if (chunk.Length > 0) chunks.Add(chunk);
+            for (var j = i + 1; j < array.Length; j++)
+            {
+                if (skipPredicate(array[j])) i++;
+                else break;
+            }
 
-            i += chunk.Length;
-            i += enumerable
-                .Skip(i)
-                .TakeWhile(skipPredicate.Invoke)
-                .Count();
+            takeIndex = i + 1;
         }
+
+        if (takeIndex < array.Length && takePredicate(array[^1]))
+            chunks.Add(array[takeIndex..]);
 
         return chunks;
     }
