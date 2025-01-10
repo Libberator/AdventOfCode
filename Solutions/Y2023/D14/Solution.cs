@@ -1,32 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AoC.Utilities.Extensions;
-using AoC.Utilities.Geometry;
+using System.Threading.Tasks;
 
 namespace AoC.Solutions.Y2023.D14;
 
 public class Solution : ISolver
 {
-    private const char Cube = '#', Round = 'O';
-    private readonly HashSet<Vec2D> _cubes = [], _rounds = [];
-    private int _size;
+    private const char Cube = '#', Round = 'O', Empty = '.';
+    private char[][] _grid = [];
+    private static int _size;
 
     public void Setup(string[] input)
     {
+        _grid = input.Select(line => line.ToCharArray()).ToArray();
         _size = input.Length;
-        foreach (var pos in input.GetGridSize().GeneratePoints())
-            switch (input.GetAt(pos))
-            {
-                case Cube: _cubes.Add(pos); break;
-                case Round: _rounds.Add(pos); break;
-            }
     }
 
     public object SolvePart1()
     {
         TiltNorth();
-        return GetScore(_rounds);
+        return GetScore(_grid);
     }
 
     public object SolvePart2()
@@ -38,8 +32,8 @@ public class Solution : ISolver
         for (var i = 0; i < cycles; i++)
         {
             DoCycle();
-            scores.Add(GetScore(_rounds));
-            var hash = GetHash(_rounds);
+            scores.Add(GetScore(_grid));
+            var hash = GetHash(_grid);
             if (cache.TryAdd(hash, i))
                 continue;
 
@@ -50,13 +44,22 @@ public class Solution : ISolver
             return scores[finalIteration];
         }
 
-        return GetScore(_rounds);
+        return GetScore(_grid);
     }
 
-    private int GetScore(HashSet<Vec2D> rounds) => rounds.Sum(pos => _size - pos.X);
+    private static int GetScore(char[][] grid) =>
+        grid.Select((row, index) => (_size - index) * row.Count(c => c == Round)).Sum();
 
-    private int GetHash(HashSet<Vec2D> rounds) =>
-        rounds.Aggregate(0, (current, pos) => current ^ (pos.X * _size + pos.Y));
+    private static int GetHash(char[][] grid)
+    {
+        var hash = 0;
+        for (var row = 0; row < _size; row++)
+            for (var col = 0; col < _size; col++)
+                if (grid[row][col] == Round)
+                    hash ^= row * _size + col;
+
+        return hash;
+    }
 
     private void DoCycle()
     {
@@ -66,48 +69,54 @@ public class Solution : ISolver
         TiltEast();
     }
 
-    private void TiltNorth() => Tilt(i => new Vec2D(0, i), i => new Vec2D(_size - 1, i), -Vec2D.N);
-    private void TiltWest() => Tilt(i => new Vec2D(i, 0), i => new Vec2D(i, _size - 1), -Vec2D.W);
-    private void TiltSouth() => Tilt(i => new Vec2D(_size - 1, i), i => new Vec2D(0, i), -Vec2D.S);
-    private void TiltEast() => Tilt(i => new Vec2D(i, _size - 1), i => new Vec2D(i, 0), -Vec2D.E);
+    private void TiltNorth() => Tilt(i => new ReadOnlySpan<char>(_grid.Select(row => row[i]).ToArray()),
+        (i, from, to) => Move(from, i, to, i));
 
-    private void Tilt(Func<int, Vec2D> startCreator, Func<int, Vec2D> endCreator, Vec2D dir)
+    private void TiltWest() => Tilt(i => new ReadOnlySpan<char>(_grid[i]),
+        (i, from, to) => Move(i, from, i, to));
+
+    private void TiltSouth() => Tilt(i => new ReadOnlySpan<char>(_grid.Select(row => row[i]).Reverse().ToArray()),
+        (i, from, to) => Move(_size - from - 1, i, _size - to - 1, i));
+
+    private void TiltEast() => Tilt(i => new ReadOnlySpan<char>(_grid[i].Reverse().ToArray()),
+        (i, from, to) => Move(i, _size - from - 1, i, _size - to - 1));
+
+    private void Move(int fromRow, int fromCol, int toRow, int toCol)
     {
-        for (var i = 0; i < _size; i++)
-        {
-            var end = endCreator(i);
-            var start = startCreator(i);
-            var emptyPos = GetNextEmptyPos(start, end, dir);
-            var pos = emptyPos;
-
-            while (pos != end)
-            {
-                pos += dir;
-
-                if (_cubes.Contains(pos))
-                {
-                    emptyPos = GetNextEmptyPos(pos, end, dir);
-                    pos = emptyPos;
-                }
-                else if (_rounds.Remove(pos))
-                {
-                    _rounds.Add(emptyPos);
-                    emptyPos = GetNextEmptyPos(emptyPos + dir, end, dir);
-                    pos = emptyPos;
-                }
-            }
-        }
+        _grid[fromRow][fromCol] = Empty;
+        _grid[toRow][toCol] = Round;
     }
 
-    private Vec2D GetNextEmptyPos(Vec2D current, Vec2D end, Vec2D dir)
+    private static void Tilt(Func<int, ReadOnlySpan<char>> tileCreator, Action<int, int, int> moveAction)
     {
-        while (current != end)
+        Parallel.For(0, _size, i =>
         {
-            if (!_cubes.Contains(current) && !_rounds.Contains(current))
-                return current;
-            current += dir;
-        }
+            var span = tileCreator(i);
+            var nextCubeIndex = GetNextCubeIndex(span, -1);
 
-        return end;
+            for (var to = 0; to < _size; to++)
+            {
+                if (to == nextCubeIndex)
+                {
+                    nextCubeIndex = GetNextCubeIndex(span, nextCubeIndex);
+                    continue;
+                }
+
+                for (var from = to; from < nextCubeIndex; from++)
+                {
+                    if (span[from] != Round) continue;
+                    moveAction(i, from, to);
+                    to++;
+                }
+
+                to = nextCubeIndex - 1;
+            }
+        });
+    }
+
+    private static int GetNextCubeIndex(ReadOnlySpan<char> span, int currentCubeIndex)
+    {
+        var nextCubeIndexOffset = span[(currentCubeIndex + 1)..].IndexOf(Cube);
+        return nextCubeIndexOffset == -1 ? _size : currentCubeIndex + 1 + nextCubeIndexOffset;
     }
 }

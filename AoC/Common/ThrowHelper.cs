@@ -37,6 +37,7 @@ internal static class ThrowHelper
         catch (Exception e)
         {
             Logger.Log(e.Message, ConsoleColor.Red);
+            // throw; // Uncomment this if you want a stack trace for debugging
         }
     }
 
@@ -52,6 +53,7 @@ internal static class ThrowHelper
         catch (Exception e)
         {
             Logger.Log(e.Message, ConsoleColor.Red);
+            // throw; // Uncomment this if you want a stack trace for debugging
         }
     }
 
@@ -67,6 +69,7 @@ internal static class ThrowHelper
         catch (Exception e)
         {
             Logger.Log(e.Message, ConsoleColor.Red);
+            // throw; // Uncomment this if you want a stack trace for debugging
             return default!;
         }
     }
