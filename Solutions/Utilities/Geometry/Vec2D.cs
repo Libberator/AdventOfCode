@@ -310,14 +310,16 @@ public readonly record struct Vec2D(int X, int Y) : ISpanParsable<Vec2D>, ISpanF
     public static bool LineIntersect(Vec2D pt1, Vec2D dir1, Vec2D pt2, Vec2D dir2, out Vec2D intersection)
     {
         intersection = Zero;
-        var det = Determinant(dir1, dir2);
+        var det = Determinant(dir2, dir1);
         if (det == 0) return false;
 
-        var delta = pt2 - pt1;
-        var t = (float)Determinant(delta, dir2) / det;
-        var s = (float)Determinant(delta, dir1) / det;
-        intersection = new Vec2D(pt1.X + (int)Math.Round(t * dir1.X), pt1.Y + (int)Math.Round(t * dir1.Y));
-        var intersection2 = new Vec2D(pt2.X + (int)Math.Round(s * dir2.X), pt2.Y + (int)Math.Round(s * dir2.Y));
+        float quotient1 = dir2.X * (pt2.Y - pt1.Y) - dir2.Y * (pt2.X - pt1.X);
+        var t = quotient1 / det;
+        intersection = new Vec2D((int)Math.Round(pt1.X + t * dir1.X), (int)Math.Round(pt1.Y + t * dir1.Y));
+        
+        float quotient2 = dir1.X * (pt1.Y - pt2.Y) - dir1.Y * (pt1.X - pt2.X);
+        var s = -quotient2 / det;
+        var intersection2 = new Vec2D((int)Math.Round(pt2.X + s * dir2.X), (int)Math.Round(pt2.Y + s * dir2.Y));
 
         return intersection == intersection2;
     }

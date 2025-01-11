@@ -14,10 +14,10 @@ public readonly record struct Vec2DLong(long X, long Y) : ISpanParsable<Vec2DLon
 {
     #region Static Fields
 
-    ///<summary>Gets the vector (1,1)</summary>
+    ///<summary>Gets the vector (1,1).</summary>
     public static readonly Vec2DLong One = new(1, 1);
 
-    ///<summary>Gets the vector (0,0)</summary>
+    ///<summary>Gets the vector (0,0).</summary>
     public static readonly Vec2DLong Zero = new(0, 0);
 
     /// <summary>Gets the vector (-1,0).</summary>
@@ -315,14 +315,16 @@ public readonly record struct Vec2DLong(long X, long Y) : ISpanParsable<Vec2DLon
         out Vec2DLong intersection)
     {
         intersection = Zero;
-        var det = Determinant(dir1, dir2);
+        var det = Determinant(dir2, dir1);
         if (det == 0) return false;
 
-        var delta = pt2 - pt1;
-        var t = (float)Determinant(delta, dir2) / det;
-        var s = (float)Determinant(delta, dir1) / det;
-        intersection = new Vec2DLong(pt1.X + (int)Math.Round(t * dir1.X), pt1.Y + (int)Math.Round(t * dir1.Y));
-        var intersection2 = new Vec2DLong(pt2.X + (int)Math.Round(s * dir2.X), pt2.Y + (int)Math.Round(s * dir2.Y));
+        double quotient1 = dir2.X * (pt2.Y - pt1.Y) - dir2.Y * (pt2.X - pt1.X);
+        var t = quotient1 / det;
+        intersection = new Vec2DLong((long)Math.Round(pt1.X + t * dir1.X), (long)Math.Round(pt1.Y + t * dir1.Y));
+        
+        double quotient2 = dir1.X * (pt1.Y - pt2.Y) - dir1.Y * (pt1.X - pt2.X);
+        var s = -quotient2 / det;
+        var intersection2 = new Vec2DLong((long)Math.Round(pt2.X + s * dir2.X), (long)Math.Round(pt2.Y + s * dir2.Y));
 
         return intersection == intersection2;
     }

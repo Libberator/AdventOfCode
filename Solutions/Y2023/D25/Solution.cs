@@ -1,19 +1,44 @@
+using System.Collections.Generic;
+using AoC.Utilities.Graphs;
+
 namespace AoC.Solutions.Y2023.D25;
 
 public class Solution : ISolver
 {
+    private readonly Dictionary<string, HashSet<string>> _adjacencyList = new();
+
     public void Setup(string[] input)
     {
-        // process input
+        foreach (var line in input)
+        {
+            var split = line.Split(": ");
+            var a = split[0];
+            var bNodes = split[1].Split(' ');
+
+            _adjacencyList.TryAdd(a, []);
+            foreach (var b in bNodes)
+            {
+                _adjacencyList[a].Add(b);
+                _adjacencyList.TryAdd(b, []);
+                _adjacencyList[b].Add(a);
+            }
+        }
     }
 
     public object SolvePart1()
     {
-        return "Part 1";
+        var nodes = new List<string>(_adjacencyList.Keys);
+        var source = nodes[0];
+        for (var i = 1; i < nodes.Count; i++)
+        {
+            var sink = nodes[i];
+            var (minCut, subgraph) = Graph.GetMaxFlowMinCut(_adjacencyList, source, sink);
+            if (minCut > 3) continue;
+            return subgraph.Count * (nodes.Count - subgraph.Count);
+        }
+
+        return 0;
     }
 
-    public object SolvePart2()
-    {
-        return "Part 2";
-    }
+    public object SolvePart2() => "Freebie";
 }
