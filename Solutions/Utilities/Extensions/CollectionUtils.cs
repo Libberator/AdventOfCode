@@ -40,7 +40,7 @@ public static partial class Utils
     /// <summary>
     ///     Searches between two values, inclusive, according to a condition.
     /// </summary>
-    /// <returns>The first value that passes the condition. Otherwise, it returns -1</returns>
+    /// <returns>The first value that passes the condition. Otherwise, -1</returns>
     public static T BinarySearch<T>(T min, T max, Predicate<T> check) where T : INumber<T>
     {
         var two = T.One + T.One;
