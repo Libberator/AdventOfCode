@@ -100,7 +100,7 @@ public readonly record struct Vec2D(int X, int Y) : ISpanParsable<Vec2D>, ISpanF
     ///     Returns all points in a rectangle, or line, between this vector (inclusive) and <paramref name="max" />
     ///     (exclusive).
     /// </summary>
-    public IEnumerable<Vec2D> GeneratePoints(Vec2D max, int padding = 0) => GeneratePoints(X, max.X, Y, max.Y, padding);
+    public IEnumerable<Vec2D> GeneratePoints(Vec2D max, int padding = 0) => GeneratePoints(this, max, padding);
 
     /// <summary>
     ///     Returns all points in a rectangle, or line, between <see cref="Zero" /> and this vector as the max (both
@@ -110,14 +110,10 @@ public readonly record struct Vec2D(int X, int Y) : ISpanParsable<Vec2D>, ISpanF
 
     /// <summary>
     ///     Returns all points in a rectangle, or line, between this vector and an <paramref name="other" /> opposite
-    ///     corner point, inclusive.
+    ///     corner point.
     /// </summary>
-    public IEnumerable<Vec2D> GeneratePointsInclusive(Vec2D other, int padding = 0)
-    {
-        int minX = Math.Min(X, other.X), maxX = Math.Max(X, other.X);
-        int minY = Math.Min(Y, other.Y), maxY = Math.Max(Y, other.Y);
-        return GeneratePointsInclusive(minX, maxX, minY, maxY, padding);
-    }
+    public IEnumerable<Vec2D> GeneratePointsInclusive(Vec2D other, int padding = 0) =>
+        GeneratePointsInclusive(this, other, padding);
 
     /// <summary>
     ///     Returns all positions in a diamond pattern that is between <paramref name="minDistance" /> (default 0) and
@@ -217,27 +213,39 @@ public readonly record struct Vec2D(int X, int Y) : ISpanParsable<Vec2D>, ISpanF
     /// <summary>Returns the dot product of two vectors.</summary>
     public static int Dot(Vec2D a, Vec2D b) => a.X * b.X + a.Y * b.Y;
 
-    /// <summary>Returns all points in a rectangle, or line, between 0 (inclusive) and max (exclusive).</summary>
-    public static IEnumerable<Vec2D> GeneratePoints(int xMax, int yMax, int padding = 0) =>
-        GeneratePoints(0, xMax, 0, yMax, padding);
+    /// <summary>Returns all points in a rectangle, or line, between min (inclusive) and max (exclusive).</summary>
+    public static IEnumerable<Vec2D> GeneratePoints(Vec2D min, Vec2D max, int padding = 0) =>
+        GeneratePoints(min.X, max.X, min.Y, max.Y, padding);
 
-    /// <summary>Returns all points in a rectangle, or line, between the min (inclusive) and max (exclusive).</summary>
-    public static IEnumerable<Vec2D> GeneratePoints(int xMin, int xMax, int yMin, int yMax, int padding = 0)
+    /// <summary>Returns all points in a rectangle, or line, between 0 (inclusive) and max (exclusive).</summary>
+    public static IEnumerable<Vec2D> GeneratePoints(int maxX, int maxY, int padding = 0) =>
+        GeneratePoints(0, maxX, 0, maxY, padding);
+
+    /// <summary>Returns all points in a rectangle, or line, between min (inclusive) and max (exclusive).</summary>
+    public static IEnumerable<Vec2D> GeneratePoints(int minX, int maxX, int minY, int maxY, int padding = 0)
     {
-        for (var x = xMin + padding; x < xMax - padding; x++)
-            for (var y = yMin + padding; y < yMax - padding; y++)
+        for (var x = minX + padding; x < maxX - padding; x++)
+            for (var y = minY + padding; y < maxY - padding; y++)
                 yield return new Vec2D(x, y);
     }
 
-    /// <summary>Returns all points in a rectangle, or line, between the 0 and max (both inclusive).</summary>
-    public static IEnumerable<Vec2D> GeneratePointsInclusive(int xMax, int yMax, int padding = 0) =>
-        GeneratePointsInclusive(0, xMax, 0, yMax, padding);
-
-    /// <summary>Returns all points in a rectangle, or line, between the min and max (both inclusive).</summary>
-    public static IEnumerable<Vec2D> GeneratePointsInclusive(int xMin, int xMax, int yMin, int yMax, int padding = 0)
+    /// <summary>Returns all points in a rectangle, or line, between two vectors (inclusive).</summary>
+    public static IEnumerable<Vec2D> GeneratePointsInclusive(Vec2D a, Vec2D b, int padding = 0)
     {
-        for (var x = xMin + padding; x <= xMax - padding; x++)
-            for (var y = yMin + padding; y <= yMax - padding; y++)
+        int minX = Math.Min(a.X, b.X), maxX = Math.Max(a.X, b.X);
+        int minY = Math.Min(a.Y, b.Y), maxY = Math.Max(a.Y, b.Y);
+        return GeneratePointsInclusive(minX, maxX, minY, maxY, padding);
+    }
+
+    /// <summary>Returns all points in a rectangle, or line, between 0 and max (both inclusive).</summary>
+    public static IEnumerable<Vec2D> GeneratePointsInclusive(int maxX, int maxY, int padding = 0) =>
+        GeneratePointsInclusive(0, maxX, 0, maxY, padding);
+
+    /// <summary>Returns all points in a rectangle, or line, between min and max (both inclusive).</summary>
+    public static IEnumerable<Vec2D> GeneratePointsInclusive(int minX, int maxX, int minY, int maxY, int padding = 0)
+    {
+        for (var x = minX + padding; x <= maxX - padding; x++)
+            for (var y = minY + padding; y <= maxY - padding; y++)
                 yield return new Vec2D(x, y);
     }
 
@@ -316,7 +324,7 @@ public readonly record struct Vec2D(int X, int Y) : ISpanParsable<Vec2D>, ISpanF
         float quotient1 = dir2.X * (pt2.Y - pt1.Y) - dir2.Y * (pt2.X - pt1.X);
         var t = quotient1 / det;
         intersection = new Vec2D((int)Math.Round(pt1.X + t * dir1.X), (int)Math.Round(pt1.Y + t * dir1.Y));
-        
+
         float quotient2 = dir1.X * (pt1.Y - pt2.Y) - dir1.Y * (pt1.X - pt2.X);
         var s = -quotient2 / det;
         var intersection2 = new Vec2D((int)Math.Round(pt2.X + s * dir2.X), (int)Math.Round(pt2.Y + s * dir2.Y));

@@ -90,44 +90,35 @@ public readonly record struct Vec3DLong(long X, long Y, long Z) : ISpanParsable<
     ///     Computes the Manhattan distance (a.k.a. Taxicab distance) between this and an <paramref name="other" /> vector. No
     ///     diagonal moves.
     /// </summary>
-    public long DistanceManhattan(Vec3DLong other) => Math.Abs(other.X - X) + Math.Abs(other.Y - Y) + Math.Abs(other.Z - Z);
+    public long DistanceManhattan(Vec3DLong other) =>
+        Math.Abs(other.X - X) + Math.Abs(other.Y - Y) + Math.Abs(other.Z - Z);
 
     /// <summary>Returns the Euclidean distance squared between two specified points.</summary>
-    public long DistanceSquared(Vec3DLong other) => (other.X - X) * (other.X - X) + (other.Y - Y) * (other.Y - Y) +
-                                               (other.Z - Z) * (other.Z - Z);
+    public long DistanceSquared(Vec3DLong other) =>
+        (other.X - X) * (other.X - X) + (other.Y - Y) * (other.Y - Y) + (other.Z - Z) * (other.Z - Z);
 
     /// <summary>Returns the dot product of two vectors.</summary>
     public long Dot(Vec3DLong other) => Dot(this, other);
 
-    /// <summary>
-    ///     Returns all points in a rectangle, or line, between <see cref="Zero" /> and this vector, exclusive.
-    /// </summary>
-    public IEnumerable<Vec3DLong> GeneratePoints(int padding = 0) => GeneratePoints(X, Y, Z, padding);
+    /// <summary>Returns all points in a box between <see cref="Zero" /> and this vector, exclusive.</summary>
+    public IEnumerable<Vec3DLong> GeneratePoints(long padding = 0) => GeneratePoints(X, Y, Z, padding);
+
+    /// <summary>Returns all points in a box between this vector (inclusive) and <paramref name="max" /> (exclusive).</summary>
+    public IEnumerable<Vec3DLong> GeneratePoints(Vec3DLong max, long padding = 0) => GeneratePoints(this, max, padding);
 
     /// <summary>
-    ///     Returns all points in a rectangle, or line, between this vector (inclusive) and <paramref name="max" />
-    ///     (exclusive).
-    /// </summary>
-    public IEnumerable<Vec3DLong> GeneratePoints(Vec3DLong max, int padding = 0) =>
-        GeneratePoints(X, max.X, Y, max.Y, Z, max.Z, padding);
-
-    /// <summary>
-    ///     Returns all points in a rectangle, or line, between <see cref="Zero" /> and this vector as the max (both
+    ///     Returns all points in a box between <see cref="Zero" /> and this vector as the max (both
     ///     inclusive).
     /// </summary>
-    public IEnumerable<Vec3DLong> GeneratePointsInclusive(int padding = 0) => GeneratePointsInclusive(X, Y, Z, padding);
+    public IEnumerable<Vec3DLong> GeneratePointsInclusive(long padding = 0) =>
+        GeneratePointsInclusive(X, Y, Z, padding);
 
     /// <summary>
-    ///     Returns all points in a rectangle, or line, between this vector and an <paramref name="other" /> opposite
+    ///     Returns all points in a box between this vector and an <paramref name="other" /> opposite
     ///     corner point, inclusive.
     /// </summary>
-    public IEnumerable<Vec3DLong> GeneratePointsInclusive(Vec3DLong other, int padding = 0)
-    {
-        long minX = Math.Min(X, other.X), maxX = Math.Max(X, other.X);
-        long minY = Math.Min(Y, other.Y), maxY = Math.Max(Y, other.Y);
-        long minZ = Math.Min(Z, other.Z), maxZ = Math.Max(Z, other.Z);
-        return GeneratePointsInclusive(minX, maxX, minY, maxY, minZ, maxZ, padding);
-    }
+    public IEnumerable<Vec3DLong> GeneratePointsInclusive(Vec3DLong other, long padding = 0) =>
+        GeneratePointsInclusive(this, other, padding);
 
     /// <summary>Determines if the two vectors are right next to each other laterally.</summary>
     public bool IsAdjacentTo(Vec3DLong other) => DistanceManhattan(other) == 1;
@@ -143,8 +134,8 @@ public readonly record struct Vec3DLong(long X, long Y, long Z) : ISpanParsable<
     ///     Determines if the two vectors are along the same diagonal (i.e. any number of units of any single
     ///     <see cref="TertiaryDirs" /> apart).
     /// </summary>
-    public bool IsDiagonalTo(Vec3DLong other) => Math.Abs(other.X - X) == Math.Abs(other.Y - Y) &&
-                                             Math.Abs(other.Y - Y) == Math.Abs(other.Z - Z);
+    public bool IsDiagonalTo(Vec3DLong other) =>
+        Math.Abs(other.X - X) == Math.Abs(other.Y - Y) && Math.Abs(other.Y - Y) == Math.Abs(other.Z - Z);
 
     /// <summary>Horizontally, Vertically, or Depth-wise aligned at any distance, but not the same position</summary>
     public bool IsLateralTo(Vec3DLong other) => new[] { other.X == X, other.Y == Y, other.Z == Z }.Count(b => b) == 1;
@@ -152,7 +143,8 @@ public readonly record struct Vec3DLong(long X, long Y, long Z) : ISpanParsable<
     /// <summary>
     ///     When treated as directions, determines if the two are parallel and neither are <see cref="Zero" />
     /// </summary>
-    public bool IsParallelTo(Vec3DLong other) => this != Zero && other != Zero && MinCollinear(this) == MinCollinear(other);
+    public bool IsParallelTo(Vec3DLong other) =>
+        this != Zero && other != Zero && MinCollinear(this) == MinCollinear(other);
 
     /// <summary>
     ///     When treated as directions, determines if the two are perpendicular and neither are <see cref="Zero" />
@@ -219,31 +211,45 @@ public readonly record struct Vec3DLong(long X, long Y, long Z) : ISpanParsable<
     /// <summary>Returns the dot product of two vectors.</summary>
     public static long Dot(Vec3DLong a, Vec3DLong b) => a.X * b.X + a.Y * b.Y + a.Z * b.Z;
 
-    /// <summary>Returns all points in a rectangle, or line, between the min (inclusive) and max (exclusive).</summary>
-    public static IEnumerable<Vec3DLong> GeneratePoints(long xMax, long yMax, long zMax, int padding = 0) =>
-        GeneratePoints(0, xMax, 0, yMax, 0, zMax, padding);
+    /// <summary>Returns all points in a box between min (inclusive) and max (exclusive).</summary>
+    public static IEnumerable<Vec3DLong> GeneratePoints(Vec3DLong min, Vec3DLong max, long padding = 0) =>
+        GeneratePoints(min.X, max.X, min.Y, max.Y, min.Z, max.Z, padding);
 
     /// <summary>Returns all points in a rectangle, or line, between the min (inclusive) and max (exclusive).</summary>
-    public static IEnumerable<Vec3DLong> GeneratePoints(long xMin, long xMax, long yMin, long yMax, long zMin, long zMax,
-        int padding = 0)
+    public static IEnumerable<Vec3DLong> GeneratePoints(long maxX, long maxY, long maxZ, long padding = 0) =>
+        GeneratePoints(0, maxX, 0, maxY, 0, maxZ, padding);
+
+    /// <summary>Returns all points in a rectangle, or line, between the min (inclusive) and max (exclusive).</summary>
+    public static IEnumerable<Vec3DLong> GeneratePoints(long minX, long maxX, long minY, long maxY, long minZ,
+        long maxZ, long padding = 0)
     {
-        for (var x = xMin + padding; x < xMax - padding; x++)
-            for (var y = yMin + padding; y < yMax - padding; y++)
-                for (var z = zMin + padding; z < zMax - padding; z++)
+        for (var x = minX + padding; x < maxX - padding; x++)
+            for (var y = minY + padding; y < maxY - padding; y++)
+                for (var z = minZ + padding; z < maxZ - padding; z++)
                     yield return new Vec3DLong(x, y, z);
     }
 
-    /// <summary>Returns all points in a rectangle, or line, between 0 and max (both inclusive).</summary>
-    public static IEnumerable<Vec3DLong> GeneratePointsInclusive(long xMax, long yMax, long zMax, int padding = 0) =>
-        GeneratePointsInclusive(0, xMax, 0, yMax, 0, zMax, padding);
-
-    /// <summary>Returns all points in a rectangle, or line, between the min and max (both inclusive).</summary>
-    public static IEnumerable<Vec3DLong> GeneratePointsInclusive(long xMin, long xMax, long yMin, long yMax, long zMin, long zMax,
-        int padding = 0)
+    /// <summary>Returns all points in a box between two vectors (inclusive).</summary>
+    public static IEnumerable<Vec3DLong> GeneratePointsInclusive(Vec3DLong a, Vec3DLong b, long padding = 0)
     {
-        for (var x = xMin + padding; x <= xMax - padding; x++)
-            for (var y = yMin + padding; y <= yMax - padding; y++)
-                for (var z = zMin + padding; z <= zMax - padding; z++)
+        long minX = Math.Min(a.X, b.X), maxX = Math.Max(a.X, b.X);
+        long minY = Math.Min(a.Y, b.Y), maxY = Math.Max(a.Y, b.Y);
+        long minZ = Math.Min(a.Z, b.Z), maxZ = Math.Max(a.Z, b.Z);
+        return GeneratePointsInclusive(minX, maxX, minY, maxY, minZ, maxZ, padding);
+    }
+
+    /// <summary>Returns all points in a box between 0 and max (both inclusive).</summary>
+    public static IEnumerable<Vec3DLong> GeneratePointsInclusive(long maxX, long maxY, long maxZ, long padding = 0) =>
+        GeneratePointsInclusive(0, maxX, 0, maxY, 0, maxZ, padding);
+
+    /// <summary>Returns all points in a box between the min and max (both inclusive).</summary>
+    public static IEnumerable<Vec3DLong> GeneratePointsInclusive(long minX, long maxX, long minY, long maxY, long minZ,
+        long maxZ,
+        long padding = 0)
+    {
+        for (var x = minX + padding; x <= maxX - padding; x++)
+            for (var y = minY + padding; y <= maxY - padding; y++)
+                for (var z = minZ + padding; z <= maxZ - padding; z++)
                     yield return new Vec3DLong(x, y, z);
     }
 
@@ -295,10 +301,12 @@ public readonly record struct Vec3DLong(long X, long Y, long Z) : ISpanParsable<
     }
 
     /// <summary>Returns a vector whose elements are the maximum of each pair-wise.</summary>
-    public static Vec3DLong Max(Vec3DLong a, Vec3DLong b) => new(Math.Max(a.X, b.X), Math.Max(a.Y, b.Y), Math.Max(a.Z, b.Z));
+    public static Vec3DLong Max(Vec3DLong a, Vec3DLong b) =>
+        new(Math.Max(a.X, b.X), Math.Max(a.Y, b.Y), Math.Max(a.Z, b.Z));
 
     /// <summary>Returns a vector whose elements are the minimum of each pair-wise.</summary>
-    public static Vec3DLong Min(Vec3DLong a, Vec3DLong b) => new(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y), Math.Min(a.Z, b.Z));
+    public static Vec3DLong Min(Vec3DLong a, Vec3DLong b) =>
+        new(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y), Math.Min(a.Z, b.Z));
 
     /// <summary>Gets a new vector reduced to its smallest integer multiple, maintaining direction.</summary>
     public static Vec3DLong MinCollinear(Vec3DLong value)
@@ -315,7 +323,8 @@ public readonly record struct Vec3DLong(long X, long Y, long Z) : ISpanParsable<
     }
 
     /// <summary>Returns a normalized vector, where each part is between -1 and 1.</summary>
-    public static Vec3DLong Normalize(Vec3DLong value) => new(Math.Sign(value.X), Math.Sign(value.Y), Math.Sign(value.Z));
+    public static Vec3DLong Normalize(Vec3DLong value) =>
+        new(Math.Sign(value.X), Math.Sign(value.Y), Math.Sign(value.Z));
 
     /// <summary>Returns true if <paramref name="value" /> is between <see cref="Zero" /> (inclusive) and max (exclusive).</summary>
     public static bool WithinBounds(Vec3DLong value, Vec3DLong max) =>
@@ -330,7 +339,8 @@ public readonly record struct Vec3DLong(long X, long Y, long Z) : ISpanParsable<
         WithinBounds(value, 0, maxX, 0, maxY, 0, maxZ);
 
     /// <summary>Returns true if <paramref name="value" /> is between min (inclusive) and max (exclusive).</summary>
-    public static bool WithinBounds(Vec3DLong value, long minX, long maxX, long minY, long maxY, long minZ, long maxZ) =>
+    public static bool WithinBounds(Vec3DLong value, long minX, long maxX, long minY, long maxY, long minZ,
+        long maxZ) =>
         value.X >= minX && value.X < maxX && value.Y >= minY && value.Y < maxY && value.Z >= minZ && value.Z < maxZ;
 
     /// <summary>Returns true if <paramref name="value" /> is between <see cref="Zero" /> and max (inclusive).</summary>
@@ -345,14 +355,16 @@ public readonly record struct Vec3DLong(long X, long Y, long Z) : ISpanParsable<
         WithinBoundsInclusive(value, 0, maxX, 0, maxY, 0, maxZ);
 
     /// <summary>Returns true if <paramref name="value" /> between min and max (inclusive).</summary>
-    public static bool WithinBoundsInclusive(Vec3DLong value, long minX, long maxX, long minY, long maxY, long minZ, long maxZ) =>
+    public static bool WithinBoundsInclusive(Vec3DLong value, long minX, long maxX, long minY, long maxY, long minZ,
+        long maxZ) =>
         value.X >= minX && value.X <= maxX && value.Y >= minY && value.Y <= maxY && value.Z >= minZ && value.Z <= maxZ;
 
     #endregion
 
     #region Parsing
 
-    public static Vec3DLong Parse(string s, IFormatProvider? provider = null) => Parse(s, NumberStyles.Integer, provider);
+    public static Vec3DLong Parse(string s, IFormatProvider? provider = null) =>
+        Parse(s, NumberStyles.Integer, provider);
 
     public static Vec3DLong Parse(string s, NumberStyles style, IFormatProvider? provider = null) =>
         string.IsNullOrEmpty(s) ? throw new ArgumentNullException(s) : Parse(s.AsSpan(), style, provider);
@@ -457,8 +469,11 @@ public readonly record struct Vec3DLong(long X, long Y, long Z) : ISpanParsable<
     public static Vec3DLong operator -(Vec3DLong left, Vec3DLong right) =>
         new(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
 
-    public static Vec3DLong operator *(Vec3DLong left, long right) => new(left.X * right, left.Y * right, left.Z * right);
-    public static Vec3DLong operator *(long left, Vec3DLong right) => new(left * right.X, left * right.Y, left * right.Z);
+    public static Vec3DLong operator *(Vec3DLong left, long right) =>
+        new(left.X * right, left.Y * right, left.Z * right);
+
+    public static Vec3DLong operator *(long left, Vec3DLong right) =>
+        new(left * right.X, left * right.Y, left * right.Z);
 
     public static Vec3DLong operator *(Vec3DLong left, Vec3DLong right) =>
         new(left.X * right.X, left.Y * right.Y, left.Z * right.Z);

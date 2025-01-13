@@ -15,17 +15,12 @@ public class Solution : ISolver
                 _allPackets.Add(ParseLine(line));
     }
 
-    // TODO: Fix this for my data. not sure what's wrong. Maybe a whole refactor is in order  :o
     public object SolvePart1()
     {
         var score = 0;
-        var pairIndex = 1;
         for (var i = 0; i < _allPackets.Count; i += 2)
-        {
-            if (_allPackets[i].CompareTo(_allPackets[i + 1]) == -1)
-                score += pairIndex;
-            pairIndex++;
-        }
+            if (ComparePackets(_allPackets[i], _allPackets[i + 1]) == -1)
+                score += i / 2 + 1;
 
         return score;
     }
@@ -37,7 +32,7 @@ public class Solution : ISolver
         _allPackets.Add(divider1);
         _allPackets.Add(divider2);
 
-        _allPackets.Sort();
+        _allPackets.Sort(ComparePackets);
 
         var index1 = _allPackets.IndexOf(divider1) + 1;
         var index2 = _allPackets.IndexOf(divider2) + 1;
@@ -47,13 +42,16 @@ public class Solution : ISolver
     private static Packet ParseLine(string line)
     {
         Packet? currentPacket = null;
-        var split = Utils.NumberPattern().Split(line); // has all the brackets and commas
-        var matches = Utils.NumberPattern().Matches(line); // has all the numbers
-        var matchIndex = 0;
-        foreach (var symbols in split)
+        var split = Utils.NumberPattern().Split(line);
+        foreach (var chunk in split)
         {
-            foreach (var symbol in symbols)
+            if (int.TryParse(chunk, out var number))
             {
+                currentPacket!.SubPackets.Add(new Packet(number, currentPacket));
+                continue;
+            }
+
+            foreach (var symbol in chunk)
                 switch (symbol)
                 {
                     case ',':
@@ -69,10 +67,6 @@ public class Solution : ISolver
                         currentPacket = currentPacket?.Parent ?? currentPacket;
                         break;
                 }
-            }
-
-            if (matchIndex < matches.Count)
-                currentPacket?.SubPackets.Add(new Packet(int.Parse(matches[matchIndex++].ValueSpan), currentPacket));
         }
 
         return currentPacket!;
@@ -83,10 +77,8 @@ public class Solution : ISolver
     {
         // Both have a number assigned
         if (left.Number.HasValue && right.Number.HasValue)
-        {
-            if (left.Number.Value == right.Number.Value) return 0;
-            return left.Number.Value < right.Number.Value ? -1 : 1;
-        }
+            return left.Number.Value == right.Number.Value ? 0 :
+                left.Number.Value < right.Number.Value ? -1 : 1;
 
         // Mixed types (number vs list) - push the value down into another packet layer
         if (left.Number.HasValue ^ right.Number.HasValue)
@@ -105,19 +97,17 @@ public class Solution : ISolver
             if (result != 0) return result;
         }
 
-        if (left.SubPackets.Count == right.SubPackets.Count) return 0;
-        return left.SubPackets.Count < right.SubPackets.Count ? -1 : 1;
+        return left.SubPackets.Count == right.SubPackets.Count ? 0 :
+            left.SubPackets.Count < right.SubPackets.Count ? -1 : 1;
     }
 
     // Every list and number is contained as its own packet. It's packets all the way down
-    private class Packet(Packet? parent = null) : IComparable<Packet>
+    private class Packet(Packet? parent = null)
     {
+        public readonly Packet? Parent = parent;
         public readonly List<Packet> SubPackets = [];
         public int? Number;
-        public readonly Packet? Parent = parent;
 
         public Packet(int number, Packet? parent = null) : this(parent) => Number = number;
-
-        public int CompareTo(Packet? other) => ComparePackets(this, other!);
     }
 }
