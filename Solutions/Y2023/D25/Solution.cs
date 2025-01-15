@@ -39,6 +39,4 @@ public class Solution : ISolver
 
         return 0;
     }
-
-    public object SolvePart2() => "Freebie";
 }

@@ -21,8 +21,6 @@ public class Solution : ISolver
 
     public object SolvePart1() => _keys.Sum(k => _locks.Count(l => Fits(k, l)));
 
-    public object SolvePart2() => "Freebie";
-
     private static bool Fits(int[] k, int[] l)
     {
         for (var i = 0; i < k.Length; i++)
