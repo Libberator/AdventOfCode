@@ -158,20 +158,20 @@ public static partial class Utils
         source.Aggregate(T.MultiplicativeIdentity, (current, value) => current * value);
 
     /// <summary>
-    ///     Generic solver for a set of linear equations. Expects an NxN matrix of coefficient and N-long array of
+    ///     Generic solver for a set of linear equations. Expects an NxN matrix of coefficient and N-length array of
     ///     constants where N is the number of unknown variables that it will solve for. 
     /// </summary>
     /// <param name="coefficients">Multidimensional array of coefficients; the multipliers of the unknown variables</param>
-    /// <param name="constants"></param>
+    /// <param name="constants">The known values unassociated with any variable on the right-hand side of the equation</param>
     /// <returns>The values for the unknown variables which satisfies all the equations. Handle floating point precision</returns>
     /// <example>
     ///     Assume you have the set of equations in the following form:<br />
     ///     [2x + 3y = 8] and [3x + y = 5]<br />
     ///     Here's what solving that would look like:
     ///     <code>
-    /// var coefficients = new double[,] { { 2.0, 3.0 }, { 3.0, 1.0 } };
-    /// var constants = new double[] { 8.0, 5.0 };
-    /// var result = Utils.SolveLinearEquations(coefficients, constants); // [ 1.0, 2.0 ]
+    /// var coefficients = new int[,] { { 2, 3 }, { 3, 1 } };
+    /// var constants = new int[] { 8, 5 };
+    /// var result = Utils.SolveLinearEquations(coefficients, constants); // [ 1, 2 ]
     /// </code>
     /// </example>
     public static T[] SolveLinearEquations<T>(T[,] coefficients, T[] constants) where T : INumber<T>

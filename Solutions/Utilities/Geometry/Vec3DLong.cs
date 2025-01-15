@@ -254,26 +254,23 @@ public readonly record struct Vec3DLong(long X, long Y, long Z) : ISpanParsable<
     }
 
     /// <summary>
-    ///     Returns two floats which show the percentage that <paramref name="value" /> is between <paramref name="a" />
-    ///     and <paramref name="b" />. Not clamped: may return values outside 0 to 1 range.
+    ///     Returns a value as the percentage that <paramref name="value" /> is between <paramref name="a" /> and
+    ///     <paramref name="b" />. Not clamped: may return values outside the 0 to 1 range.
     /// </summary>
-    public static (float tX, float tY, float tZ) InverseLerp(Vec3DLong value, Vec3DLong a, Vec3DLong b)
+    public static double InverseLerp(Vec3DLong value, Vec3DLong a, Vec3DLong b)
     {
-        var tX = a.X != b.X ? (value.X - a.X) / (float)(b.X - a.X) : 0f;
-        var tY = a.Y != b.Y ? (value.Y - a.Y) / (float)(b.Y - a.Y) : 0f;
-        var tZ = a.Z != b.Z ? (value.Z - a.Z) / (float)(b.Z - a.Z) : 0f;
-        return (tX, tY, tZ);
+        var ab = b - a;
+        var av = value - a;
+        double abLengthSquared = ab.LengthSquared();
+        return abLengthSquared == 0 ? 0 : Dot(av, ab) / abLengthSquared;
     }
 
     /// <summary>
-    ///     Returns two floats which show the percentage that <paramref name="value" /> is between <paramref name="a" />
-    ///     and <paramref name="b" />. Clamped: will return values between 0 and 1.
+    ///     Returns a value as the percentage that <paramref name="value" /> is between <paramref name="a" /> and
+    ///     <paramref name="b" />. Clamped: will return values between 0 and 1.
     /// </summary>
-    public static (float tX, float tY, float tZ) InverseLerpClamped(Vec3DLong value, Vec3DLong a, Vec3DLong b)
-    {
-        var (tX, tY, tZ) = InverseLerp(value, a, b);
-        return (Math.Clamp(tX, 0f, 1f), Math.Clamp(tY, 0f, 1f), Math.Clamp(tZ, 0f, 1f));
-    }
+    public static double InverseLerpClamped(Vec3DLong value, Vec3DLong a, Vec3DLong b) =>
+        Math.Clamp(InverseLerp(value, a, b), 0, 1);
 
     /// <summary>Returns the length, or magnitude, of the vector <paramref name="value" />.</summary>
     public static double Length(Vec3DLong value) => Math.Sqrt(LengthSquared(value));
@@ -282,7 +279,7 @@ public readonly record struct Vec3DLong(long X, long Y, long Z) : ISpanParsable<
     public static long LengthSquared(Vec3DLong value) => value.X * value.X + value.Y * value.Y;
 
     /// <summary>Performs a linear interpolation between two vectors based on the given weighting (0f to 1f).</summary>
-    public static Vec3DLong Lerp(Vec3DLong a, Vec3DLong b, float weight)
+    public static Vec3DLong Lerp(Vec3DLong a, Vec3DLong b, double weight)
     {
         var x = (long)Math.Round(a.X + (b.X - a.X) * weight);
         var y = (long)Math.Round(a.Y + (b.Y - a.Y) * weight);
@@ -291,14 +288,8 @@ public readonly record struct Vec3DLong(long X, long Y, long Z) : ISpanParsable<
     }
 
     /// <summary>Re-maps a vector from one range to another.</summary>
-    public static Vec3DLong Map(Vec3DLong value, Vec3DLong fromMin, Vec3DLong fromMax, Vec3DLong toMin, Vec3DLong toMax)
-    {
-        var (tX, tY, tZ) = InverseLerp(value, fromMin, fromMax);
-        var x = (long)float.Lerp(toMin.X, toMax.X, tX);
-        var y = (long)float.Lerp(toMin.Y, toMax.Y, tY);
-        var z = (long)float.Lerp(toMin.Z, toMax.Z, tZ);
-        return new Vec3DLong(x, y, z);
-    }
+    public static Vec3DLong Map(Vec3DLong value, Vec3DLong fromMin, Vec3DLong fromMax, Vec3DLong toMin,
+        Vec3DLong toMax) => Lerp(toMin, toMax, InverseLerp(value, fromMin, fromMax));
 
     /// <summary>Returns a vector whose elements are the maximum of each pair-wise.</summary>
     public static Vec3DLong Max(Vec3DLong a, Vec3DLong b) =>

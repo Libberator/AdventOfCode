@@ -37,9 +37,7 @@ public static partial class Utils
         return predicate(list[min]) ? min : predicate(list[max]) ? max : -1;
     }
 
-    /// <summary>
-    ///     Searches between two values, inclusive, according to a condition.
-    /// </summary>
+    /// <summary>Searches between two values, inclusive, according to a condition.</summary>
     /// <returns>The first value that passes the condition. Otherwise, -1</returns>
     public static T BinarySearch<T>(T min, T max, Predicate<T> check) where T : INumber<T>
     {
@@ -64,7 +62,7 @@ public static partial class Utils
         var chunks = new List<T[]>();
         var array = source as T[] ?? source.ToArray();
         skipPredicate ??= el => !takePredicate(el);
-        
+
         var takeIndex = 0;
         for (var i = 0; i < array.Length; i++)
         {
@@ -73,10 +71,8 @@ public static partial class Utils
                 chunks.Add(array[takeIndex..i]);
 
             for (var j = i + 1; j < array.Length; j++)
-            {
                 if (skipPredicate(array[j])) i++;
                 else break;
-            }
 
             takeIndex = i + 1;
         }
