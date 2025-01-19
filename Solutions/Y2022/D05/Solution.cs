@@ -25,6 +25,7 @@ public class Solution : ISolver
 
         foreach (var line in input[(emptyIndex + 1)..])
         {
+            if (string.IsNullOrEmpty(line)) continue;
             var matches = Utils.NumberPattern().Matches(line);
             _instructions.Add(new Move(int.Parse(matches[0].ValueSpan), int.Parse(matches[1].ValueSpan),
                 int.Parse(matches[2].ValueSpan)));
