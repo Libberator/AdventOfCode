@@ -1,19 +1,25 @@
+using System;
+
 namespace AoC.Solutions.Y2021.D01;
 
 public class Solution : ISolver
 {
-    public void Setup(string[] input)
-    {
-        // process input
-    }
+    private int[] _data = [];
 
-    public object SolvePart1()
-    {
-        return "Part 1";
-    }
+    public void Setup(string[] input) => _data = Array.ConvertAll(input, int.Parse);
 
-    public object SolvePart2()
+    public object SolvePart1() => GetIncreasedCount(1);
+
+    public object SolvePart2() => GetIncreasedCount(3);
+
+    private int GetIncreasedCount(int windowSize)
     {
-        return "Part 2";
+        var increasedCount = 0;
+
+        for (var i = windowSize; i < _data.Length; i++)
+            if (_data[i] > _data[i - windowSize])
+                increasedCount++;
+
+        return increasedCount;
     }
 }
