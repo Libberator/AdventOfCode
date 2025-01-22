@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using AoC.Utilities.Graphs;
+using AoC.Utilities.Algorithms;
 
 namespace AoC.Solutions.Y2023.D25;
 

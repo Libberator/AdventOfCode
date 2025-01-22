@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using AoC.Utilities.Graphs;
+using AoC.Utilities.Algorithms;
 
 namespace AoC.Solutions.Y2022.D16;
 
@@ -28,7 +28,7 @@ public class Solution : ISolver
                 _valves.Add(new Valve(valveId, 1 << _valves.Count, flowRate));
         }
 
-        _distanceCosts = Graph.FindShortestPathCosts(adjacencyList);
+        _distanceCosts = Graph.GetAllShortestCosts(adjacencyList).ToDictionary();
     }
 
     public object SolvePart1() => FindHighestPressure(30);

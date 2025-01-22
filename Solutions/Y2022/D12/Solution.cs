@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using AoC.Utilities.Algorithms;
 using AoC.Utilities.Extensions;
 using AoC.Utilities.Geometry;
-using AoC.Utilities.Graphs;
 
 namespace AoC.Solutions.Y2022.D12;
 
@@ -36,17 +36,9 @@ public class Solution : ISolver
         }
     }
 
-    public object SolvePart1()
-    {
-        Graph.FindShortestPath(_start, _end, _graph, GetCost, Heuristic, out var path);
-        return path.Count - 1;
-    }
+    public object SolvePart1() => Pathfinding.FindShortestPath(_start, _end, _graph, GetCost, Heuristic).Count - 1;
 
-    public object SolvePart2()
-    {
-        Graph.TryFindShortestPath(_end, EndCondition, _reversedGraph, GetCost, out var path);
-        return path.Count - 1;
-    }
+    public object SolvePart2() => Pathfinding.FindShortestPath(_end, EndCondition, _reversedGraph, GetCost).Count - 1;
 
     private int GetCost(Vec2D _, Vec2D neighbor) => _grid.GetAt(neighbor) - 'a' + 1;
     private static int Heuristic(Vec2D pos, Vec2D end) => pos.DistanceManhattan(end);

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using AoC.Utilities.Algorithms;
 using AoC.Utilities.Extensions;
-using AoC.Utilities.Graphs;
 
 namespace AoC.Solutions.Y2024.D23;
 
