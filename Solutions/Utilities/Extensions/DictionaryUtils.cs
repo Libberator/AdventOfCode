@@ -19,7 +19,7 @@ public static partial class Utils
     }
 
     // support for other types of dictionaries (e.g. SortedDictionary) 
-    /// <inheritdoc cref="AddToExistingOrCreate{TKey,TValue}(System.Collections.Generic.Dictionary{TKey,TValue},TKey,TValue)"/>
+    /// <inheritdoc cref="AddToExistingOrCreate{TKey,TValue}(System.Collections.Generic.Dictionary{TKey,TValue},TKey,TValue)" />
     public static bool AddToExistingOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue val)
         where TValue : INumber<TValue>
     {
