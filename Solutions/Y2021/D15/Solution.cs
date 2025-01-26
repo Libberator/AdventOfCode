@@ -8,9 +8,9 @@ namespace AoC.Solutions.Y2021.D15;
 
 public class Solution : ISolver
 {
+    private readonly Vec2D _start = Vec2D.Zero;
     private string[] _grid = [];
     private Vec2D _gridSize, _expandedGridSize;
-    private readonly Vec2D _start = Vec2D.Zero;
 
     public void Setup(string[] input)
     {
@@ -22,14 +22,15 @@ public class Solution : ISolver
     public object SolvePart1()
     {
         var goal = _gridSize - Vec2D.One;
-        var path = Pathfinding.FindShortestPath(_start, goal, GetNeighbors, GetCost, Heuristic);
+        var path = Pathfinding.FindShortestPath(_start, goal, GetNeighbors, GetCost, Vec2D.DistanceManhattan);
         return path.Sum(CostAt) - CostAt(_start);
     }
 
     public object SolvePart2()
     {
         var goal = _expandedGridSize - Vec2D.One;
-        var path = Pathfinding.FindShortestPath(_start, goal, GetNeighborsExpanded, GetCostExpanded, Heuristic);
+        var path = Pathfinding.FindShortestPath(_start, goal, GetNeighborsExpanded, GetCostExpanded,
+            Vec2D.DistanceManhattan);
         return path.Sum(CostAtExpanded) - CostAt(_start);
     }
 
@@ -46,8 +47,6 @@ public class Solution : ISolver
     private int CostAt(Vec2D pos) => _grid.GetAt(pos) - '0';
 
     private int GetCost(Vec2D _, Vec2D next) => CostAt(next);
-
-    private static int Heuristic(Vec2D pos, Vec2D end) => pos.DistanceManhattan(end);
 
     private IEnumerable<Vec2D> GetNeighborsExpanded(Vec2D pos)
     {
