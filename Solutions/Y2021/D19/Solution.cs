@@ -13,7 +13,7 @@ public class Solution : ISolver
     public void Setup(string[] input)
     {
         foreach (var chunk in input.ChunkByNonEmpty())
-            _scanners.Add(Array.ConvertAll(chunk[1..], line => Vec3D.Parse(line)));
+            _scanners.Add(Array.ConvertAll(chunk[1..], Vec3D.Parse));
     }
 
     public object SolvePart1()
