@@ -7,7 +7,7 @@ namespace AoC.Solutions.Y2025.D03;
 public class Solution : ISolver
 {
     private string[] _input = [];
-    
+
     public void Setup(string[] input) => _input = input;
 
     public object SolvePart1() => _input.Sum(line => GetJoltage(line, 2));
@@ -27,18 +27,15 @@ public class Solution : ISolver
                 digits.RemoveAt(i);
                 goto Loop;
             }
-            break;
-        }
 
-        while (digits.Count > targetLength)
-        {
-            for (var num = '1'; num <= '9'; num++)
-            {
-                var index = digits.IndexOf(num);
-                if (index == -1) continue;
-                digits.RemoveAt(index);
-                break;
-            }
+            while (digits.Count > targetLength)
+                for (var num = '1'; num <= '9'; num++)
+                {
+                    var index = digits.IndexOf(num);
+                    if (index == -1) continue;
+                    digits.RemoveAt(index);
+                    break;
+                }
         }
 
         return digits.Aggregate<char, long>(0, (current, c) => current * 10 + c.AsDigit());

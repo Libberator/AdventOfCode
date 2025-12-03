@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using AoC.Utilities.Extensions;
 using AoC.Utilities.Geometry;
 
 namespace AoC.Solutions.Y2025.D02;
@@ -40,7 +39,6 @@ public class Solution : ISolver
     {
         long total = 0;
         foreach (var (start, end) in _idRanges)
-        {
             for (var i = start; i <= end; i++)
             {
                 var digits = (int)Math.Log10(i) + 1;
@@ -57,7 +55,7 @@ public class Solution : ISolver
                     break;
                 }
             }
-        }
+
         return total;
     }
 }
