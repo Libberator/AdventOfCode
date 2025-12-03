@@ -442,11 +442,11 @@ public readonly record struct Vec2DLong(long X, long Y) : ISpanParsable<Vec2DLon
             throw new FormatException($"Invalid input: '{s}'.");
 
         var xPart = s[ranges[0]];
-        if (!int.TryParse(xPart, out var x))
+        if (!long.TryParse(xPart, out var x))
             throw new FormatException($"Invalid number format for X: '{xPart.ToString()}'.");
 
         var yPart = s[ranges[1]];
-        if (!int.TryParse(yPart, out var y))
+        if (!long.TryParse(yPart, out var y))
             throw new FormatException($"Invalid number format for Y: '{yPart.ToString()}'.");
 
         return new Vec2DLong(x, y);

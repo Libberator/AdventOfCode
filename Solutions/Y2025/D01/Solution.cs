@@ -37,7 +37,7 @@ public class Solution : ISolver
             var prevDial = dial;
             dial += dir == 'R' ? i % DialLength : -i % DialLength;
             zeroPasses += i / DialLength;
-            if (dial is 0 or >= DialLength or <= -DialLength || (prevDial != 0 && Math.Sign(prevDial) != Math.Sign(dial))) zeroPasses++;
+            if (dial is 0 or >= DialLength or <= -DialLength || (prevDial != 0 && prevDial < 0 != dial < 0)) zeroPasses++;
             dial %= DialLength;
         }
 
