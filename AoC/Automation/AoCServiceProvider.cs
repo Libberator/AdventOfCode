@@ -60,7 +60,7 @@ public class AoCServiceProvider(string? userSession)
 
             await Logger.WaitUntilAsync(() => DateTimeOffset.Now >= requestedDay, () =>
                     $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Waiting for {(requestedDay - DateTimeOffset.Now).ToReadableString()}",
-                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Done waiting!", 1000);
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Done waiting!", 150);
         }
 
         try

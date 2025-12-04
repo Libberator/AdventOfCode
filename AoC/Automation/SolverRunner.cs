@@ -32,7 +32,7 @@ public class SolverRunner(AoCServiceProvider aoCServiceProvider)
 
         // Check locally for input file. If it's not found, and we can fetch, fetch for it
         var hasInput = File.Exists(inputPath);
-        if (!hasInput && !noFetch) hasInput = await aoCServiceProvider.Fetch(year, day, inputPath);
+        if (!hasInput && !noFetch) hasInput = await aoCServiceProvider.Fetch(year, day, inputPath, wait: wait);
         if (!hasInput)
         {
             Logger.Log($"No input file found at '{inputPath}'", ConsoleColor.Red);
