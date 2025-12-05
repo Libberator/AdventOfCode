@@ -19,7 +19,7 @@ internal static class Logger
     public static async Task WaitUntilAsync(Func<bool> predicate, Func<string> waitMsg, string completeMsg,
         int updateMs = 500)
     {
-        const string ellipsis = ".....";
+        const string ellipsis = "...";
         int dynamicPadding = 0, i = 0;
         Console.ForegroundColor = ConsoleColor.White;
         while (!predicate())
