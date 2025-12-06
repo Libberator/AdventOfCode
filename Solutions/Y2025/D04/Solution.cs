@@ -23,11 +23,10 @@ public class Solution : ISolver
 
     public object SolvePart2()
     {
-        var startCount = _papers.Count;
-        while (_papers.RemoveWhere(pos => Vec2D.AllDirs.Count(dir => _papers.Contains(pos + dir)) < 4) > 0)
-        {
-        }
+        int removed, total = 0;
+        while ((removed = _papers.RemoveWhere(pos => Vec2D.AllDirs.Count(dir => _papers.Contains(pos + dir)) < 4)) > 0)
+            total += removed;
 
-        return startCount - _papers.Count;
+        return total;
     }
 }
