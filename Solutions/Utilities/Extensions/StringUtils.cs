@@ -9,13 +9,13 @@ namespace AoC.Utilities.Extensions;
 
 public static partial class Utils
 {
-    public static float[] ParseFloats(this string s) => s.Parse<float>(FloatPattern()).ToArray();
+    public static float[] ParseFloats(this string s) => s.ParseMany<float>(FloatPattern()).ToArray();
     public static float[] ParseFloats(this string[] s) => s.ParseMany<float>(FloatPattern()).ToArray();
-    public static int[] ParseInts(this string s) => s.Parse<int>(NumberPattern()).ToArray();
+    public static int[] ParseInts(this string s) => s.ParseMany<int>(NumberPattern()).ToArray();
     public static int[] ParseInts(this string[] s) => s.ParseMany<int>(NumberPattern()).ToArray();
-    public static long[] ParseLongs(this string s) => s.Parse<long>(NumberPattern()).ToArray();
+    public static long[] ParseLongs(this string s) => s.ParseMany<long>(NumberPattern()).ToArray();
     public static long[] ParseLongs(this string[] s) => s.ParseMany<long>(NumberPattern()).ToArray();
-    public static Vec2D[] ParseVec2Ds(this string s) => s.Parse<Vec2D>(Vec2DPattern()).ToArray();
+    public static Vec2D[] ParseVec2Ds(this string s) => s.ParseMany<Vec2D>(Vec2DPattern()).ToArray();
     public static Vec2D[] ParseVec2Ds(this string[] s) => s.ParseMany<Vec2D>(Vec2DPattern()).ToArray();
 
     /// <summary>Converts a char to an integer (0-9). This assumes your char matches [0-9].</summary>
@@ -38,7 +38,8 @@ public static partial class Utils
     /// <summary>Finds first instance of character, returns position as (row, col). If not found, returns (-1,-1).</summary>
     public static Vec2D FindPosOf(this string[] data, char target)
     {
-        int y = -1, x = Array.FindIndex(data, line => (y = line.IndexOf(target)) != -1);
+        var y = -1;
+        var x = Array.FindIndex(data, line => (y = line.IndexOf(target)) != -1);
         return new Vec2D(x, y);
     }
 
@@ -49,6 +50,7 @@ public static partial class Utils
         return pos.X != -1 && pos.Y != -1;
     }
 
+    /// <summary>Note: the X value of <paramref name="pos" /> is the string selector, the Y value is the char index.</summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static char GetAt(this string[] data, Vec2D pos) => data[pos.X][pos.Y];
 
@@ -82,19 +84,19 @@ public static partial class Utils
     public static string Repeat(this char c, int n) => new(c, n);
 
     /// <summary>Returns a new string[] with the source data transposed (col swapped with row). Does not modify in-place.</summary>
-    public static string[] Transpose(this string[] data)
+    public static string[] Transpose(this string[] source)
     {
-        var width = data[0].Length;
-        if (data.Any(line => line.Length != width))
-            throw new ArgumentException($"Invalid data length. Not all lines are {width} characters long");
+        var cols = source[0].Length;
+        if (source.Any(line => line.Length != cols))
+            throw new ArgumentException($"Invalid data length. Not all lines are {cols} characters long");
 
-        var result = new string[width];
+        var result = new string[cols];
         var sb = new StringBuilder();
-        for (var i = 0; i < width; i++)
+        for (var c = 0; c < cols; c++)
         {
-            foreach (var line in data)
-                sb.Append(line[i]);
-            result[i] = sb.ToString();
+            foreach (var line in source)
+                sb.Append(line[c]);
+            result[c] = sb.ToString();
             sb.Clear();
         }
 

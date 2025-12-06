@@ -38,9 +38,9 @@ public static partial class Utils
         where T : ISpanParsable<T> =>
         matches.SelectMany(m => m.Captures.Select(capture => T.Parse(capture.ValueSpan, provider)));
 
-    public static IEnumerable<T> Parse<T>(this string s, Regex pattern, IFormatProvider? provider = null)
+    public static IEnumerable<T> ParseMany<T>(this string s, Regex pattern, IFormatProvider? provider = null)
         where T : ISpanParsable<T> => pattern.Matches(s).ParseMany<T>(provider);
 
     public static IEnumerable<T> ParseMany<T>(this string[] s, Regex pattern, IFormatProvider? provider = null)
-        where T : ISpanParsable<T> => s.SelectMany(l => l.Parse<T>(pattern, provider));
+        where T : ISpanParsable<T> => s.SelectMany(l => l.ParseMany<T>(pattern, provider));
 }

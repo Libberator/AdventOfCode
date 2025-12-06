@@ -138,4 +138,50 @@ public static partial class Utils
         list.RemoveAt(from);
         list.Insert(to, temp);
     }
+
+    /// <summary>Returns a new collection with the source data transposed (col swapped with row). Does not modify in-place.</summary>
+    public static IEnumerable<IEnumerable<T>> Transpose<T>(this IEnumerable<IEnumerable<T>> source)
+    {
+        var enumerators = source.Select(s => s.GetEnumerator()).ToList();
+        while (enumerators.All(e => e.MoveNext()))
+            yield return enumerators.Select(e => e.Current).ToList();
+    }
+
+    /// <summary>Returns a new collection with the source data transposed (col swapped with row). Does not modify in-place.</summary>
+    public static T[,] Transpose<T>(this T[,] source)
+    {
+        var rows = source.GetLength(0);
+        var cols = source.GetLength(1);
+        var result = new T[cols, rows];
+
+        for (var r = 0; r < rows; r++)
+            for (var c = 0; c < cols; c++)
+                result[c, r] = source[r, c];
+
+        return result;
+    }
+
+    /// <summary>Returns a new collection with the source data transposed (col swapped with row). Does not modify in-place.</summary>
+    public static T[][] Transpose<T>(this T[][] source)
+    {
+        var rows = source.Length;
+        if (rows == 0)
+            return [];
+
+        var cols = source[0].Length;
+        if (source.Any(line => line.Length != cols))
+            throw new ArgumentException($"Invalid data length. Not all items are {cols} long");
+
+        var result = new T[cols][];
+
+        for (var c = 0; c < cols; c++)
+        {
+            var newRow = new T[rows];
+            for (var r = 0; r < rows; r++)
+                newRow[r] = source[r][c];
+            result[c] = newRow;
+        }
+
+        return result;
+    }
 }
