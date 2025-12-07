@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using AoC.Utilities.Extensions;
 using AoC.Utilities.Geometry;
 
@@ -7,7 +8,7 @@ namespace AoC.Solutions.Y2025.D07;
 public class Solution : ISolver
 {
     private const char Start = 'S', Splitter = '^';
-    private static string[] _input = [];
+    private string[] _input = [];
     private Vec2D _startPos;
 
     public void Setup(string[] input)
@@ -16,32 +17,31 @@ public class Solution : ISolver
         _startPos = input.FindPosOf(Start);
     }
 
-    public object SolvePart1()
+    public object SolvePart1() => Solve(_input, _startPos).TotalSplits;
+
+    public object SolvePart2() => Solve(_input, _startPos).TotalPaths;
+
+    private static (int TotalSplits, long TotalPaths) Solve(string[] input, Vec2D start)
     {
         var splits = 0;
-        _ = Step(_startPos, [], ref splits);
-        return splits;
-    }
+        HashSet<int> columns = [start.Y];
+        var pathCounts = new long[input[0].Length];
+        pathCounts[start.Y] = 1;
 
-    public object SolvePart2()
-    {
-        var _ = 0;
-        return Step(_startPos, [], ref _);
-    }
+        for (var x = start.X + 1; x < input.Length; x++)
+            foreach (var y in new List<int>(columns))
+            {
+                if (input[x][y] != Splitter) continue;
+                pathCounts[y - 1] += pathCounts[y];
+                pathCounts[y + 1] += pathCounts[y];
+                pathCounts[y] = 0;
 
-    private static long Step(Vec2D current, Dictionary<Vec2D, long> memo, ref int splits)
-    {
-        if (memo.TryGetValue(current, out var paths))
-            return paths;
+                columns.Add(y - 1);
+                columns.Add(y + 1);
+                columns.Remove(y);
+                splits++;
+            }
 
-        var next = current + Vec2D.S;
-
-        if (next.X >= _input.Length)
-            return memo[current] = 1;
-        if (_input.GetAt(next) != Splitter)
-            return memo[current] = Step(next, memo, ref splits);
-
-        splits++;
-        return memo[current] = Step(next + Vec2D.W, memo, ref splits) + Step(next + Vec2D.E, memo, ref splits);
+        return (splits, pathCounts.Sum());
     }
 }
