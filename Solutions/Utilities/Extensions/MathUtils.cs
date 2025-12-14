@@ -14,6 +14,13 @@ public static partial class Utils
     public static bool Approximately(this double value, double target, double epsilon = Epsilon) =>
         Math.Abs(value - target) < epsilon;
 
+    /// <summary>Returns the average, or mean, of a collection of numbers.</summary>
+    public static T Average<T>(this IList<T> values) where T : INumber<T>
+    {
+        var sum = values.Aggregate(T.Zero, (current, x) => current + x);
+        return sum / T.CreateChecked(values.Count);
+    }
+
     ///<summary>Binomial coefficient. a.k.a. "n choose k". ex. "7 choose 2" = 7 * (7 - 1) / 2 = 21.</summary>
     public static int BinomialChoose(this int n, int k)
     {
@@ -242,10 +249,14 @@ public static partial class Utils
     public static T TriangleSum<T>(T n) where T : INumber<T> => n * (n + T.One) / (T.One + T.One);
 
     /// <summary>Calculate the expectation of the squared deviation from its mean from a set of numbers.</summary>
-    public static double Variance(this IEnumerable<int> source)
+    public static double Variance<T>(this IEnumerable<T> source) where T : INumber<T>
     {
         var array = source.ToArray();
-        var mean = array.Average();
-        return array.Sum(n => (n - mean) * (n - mean)) / array.Length;
+        double arrayLength = array.Length;
+        if (arrayLength == 0) return 0;
+
+        var sum = array.Aggregate(T.Zero, (current, number) => current + number);
+        var mean = double.CreateChecked(sum) / arrayLength;
+        return array.Select(double.CreateChecked).Sum(n => (n - mean) * (n - mean)) / arrayLength;
     }
 }

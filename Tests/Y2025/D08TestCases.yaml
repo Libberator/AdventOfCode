@@ -1,12 +1,24 @@
 TestCases:
 - Input: |-
-    Multi-line Input Data Goes Here.
-    Indentation level / whitespace is important in Yaml.
-
-    Update expected results as needed - leave expected
-    answer blank if the input doesn't apply for that part.
-
-    For more test cases for this day, duplicate everything
-    under "TestCases:" (i.e. excluding that first line).
-  Part1Expected: Part 1
-  Part2Expected: Part 2
+    162,817,812
+    57,618,57
+    906,360,560
+    592,479,940
+    352,342,300
+    466,668,158
+    542,29,236
+    431,825,988
+    739,650,466
+    52,470,668
+    216,146,977
+    819,987,18
+    117,168,530
+    805,96,715
+    346,949,466
+    970,615,88
+    941,993,340
+    862,61,35
+    984,92,344
+    425,690,689
+  Part1Expected: 40
+  Part2Expected: 25272

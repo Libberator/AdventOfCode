@@ -20,7 +20,7 @@ public class Solution : ISolver
 
     public object SolvePart2()
     {
-        var meanValue = (int)_data.Average();
+        var meanValue = _data.Average();
         var cost1 = GetFuelCostAtSpot(_data, meanValue, Utils.TriangleSum);
         var cost2 = GetFuelCostAtSpot(_data, meanValue + 1, Utils.TriangleSum); // in case rounding down was bad
         return Math.Min(cost1, cost2);

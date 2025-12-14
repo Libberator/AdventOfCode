@@ -1,12 +1,37 @@
 TestCases:
 - Input: |-
-    Multi-line Input Data Goes Here.
-    Indentation level / whitespace is important in Yaml.
+    0:
+    ###
+    ##.
+    ##.
 
-    Update expected results as needed - leave expected
-    answer blank if the input doesn't apply for that part.
+    1:
+    ###
+    ##.
+    .##
 
-    For more test cases for this day, duplicate everything
-    under "TestCases:" (i.e. excluding that first line).
-  Part1Expected: Part 1
-  Part2Expected: Part 2
+    2:
+    .##
+    ###
+    ##.
+
+    3:
+    ##.
+    ###
+    ##.
+
+    4:
+    ###
+    #..
+    ###
+
+    5:
+    ###
+    .#.
+    ###
+
+    4x4: 0 0 0 0 2 0
+    12x5: 1 0 1 0 2 2
+    12x5: 1 0 1 0 3 2
+  Part1Expected: 2
+  Part2Expected: 

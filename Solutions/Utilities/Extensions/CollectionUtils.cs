@@ -73,6 +73,17 @@ public static partial class Utils
         return chunks;
     }
 
+    /// <summary>Yields every unique pair in a collection. Helpful shortcut simply to reduce nesting for-loops.</summary>
+    public static IEnumerable<(T, T)> UniquePairs<T>(this IList<T> source)
+    {
+        for (var i = 0; i < source.Count - 1; i++)
+        {
+            var a = source[i];
+            for (var j = i + 1; j < source.Count; j++)
+                yield return (a, source[j]);
+        }
+    }
+
     /// <summary>
     ///     For getting vertical data in 2D arrays. This will throw an exception if you don't have the right amount in the
     ///     jagged array.
@@ -137,6 +148,23 @@ public static partial class Utils
         var temp = list[from];
         list.RemoveAt(from);
         list.Insert(to, temp);
+    }
+
+    /// <summary>Returns the largest <paramref name="n" /> values in O(n) time.</summary>
+    public static T[] Top<T>(this IEnumerable<T> source, int n) where T : INumber<T>
+    {
+        var top = new T[n];
+
+        foreach (var value in source)
+        {
+            if (value <= top[0]) continue;
+            top[0] = value;
+
+            for (var i = 0; i < n - 1 && top[i] > top[i + 1]; i++)
+                (top[i], top[i + 1]) = (top[i + 1], top[i]);
+        }
+
+        return top;
     }
 
     /// <summary>Returns a new collection with the source data transposed (col swapped with row). Does not modify in-place.</summary>

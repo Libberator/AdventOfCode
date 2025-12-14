@@ -17,7 +17,13 @@ public static partial class Utils
     public static long[] ParseLongs(this string[] s) => s.ParseMany<long>(NumberPattern()).ToArray();
     public static Vec2D[] ParseVec2Ds(this string s) => s.ParseMany<Vec2D>(Vec2DPattern()).ToArray();
     public static Vec2D[] ParseVec2Ds(this string[] s) => s.ParseMany<Vec2D>(Vec2DPattern()).ToArray();
-
+    public static Vec2DLong[] ParseVec2DLongs(this string s) => s.ParseMany<Vec2DLong>(Vec2DPattern()).ToArray();
+    public static Vec2DLong[] ParseVec2DLongs(this string[] s) => s.ParseMany<Vec2DLong>(Vec2DPattern()).ToArray();
+    public static Vec3D[] ParseVec3Ds(this string s) => s.ParseMany<Vec3D>(Vec3DPattern()).ToArray();
+    public static Vec3D[] ParseVec3Ds(this string[] s) => s.ParseMany<Vec3D>(Vec3DPattern()).ToArray();
+    public static Vec3DLong[] ParseVec3DLongs(this string s) => s.ParseMany<Vec3DLong>(Vec3DPattern()).ToArray();
+    public static Vec3DLong[] ParseVec3DLongs(this string[] s) => s.ParseMany<Vec3DLong>(Vec3DPattern()).ToArray();
+    
     /// <summary>Converts a char to an integer (0-9). This assumes your char matches [0-9].</summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int AsDigit(this char c) => c - '0'; // `c & 0xF;` also works (same performance) but is less readable

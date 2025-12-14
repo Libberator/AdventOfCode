@@ -42,5 +42,5 @@ public class Solution : ISolver
 
     private int GetCost(Vec2D _, Vec2D neighbor) => _grid.GetAt(neighbor) - 'a' + 1;
     private static int Heuristic(Vec2D pos, Vec2D end) => pos.DistanceManhattan(end);
-    private bool EndCondition(Vec2D pos) => _grid.GetAt(pos) is 'a' or 'S';
+    private bool EndCondition(Vec2D pos) => _grid.GetAt(pos) is 'a';// or 'S';
 }
